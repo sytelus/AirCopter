@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "estimator.hpp"
-#include "CommonState.hpp"
+#include "commonstate.hpp"
 #include "param.hpp"
 
 class Sensors {

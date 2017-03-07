@@ -11,7 +11,7 @@
 #include "rc.hpp"
 #include "board.hpp"
 #include "api.hpp"
-#include "CommonState.hpp"
+#include "commonstate.hpp"
 
 int main(void)
 {

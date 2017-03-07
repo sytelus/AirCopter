@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include "sensors.hpp"
 #include "rc.hpp"
-#include "CommonState.hpp"
+#include "commonstate.hpp"
 #include "param.hpp"
 
 class Mode {

@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "CommonState.hpp"
+#include "commonstate.hpp"
 #include "param.hpp"
 
 class Mixer {

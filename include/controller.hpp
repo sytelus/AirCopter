@@ -7,7 +7,7 @@
 #include "param.hpp"
 #include "estimator.hpp"
 #include "mixer.hpp"
-#include "CommonState.hpp"
+#include "commonstate.hpp"
 
 class Controller {
 public:

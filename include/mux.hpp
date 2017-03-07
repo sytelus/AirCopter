@@ -2,7 +2,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "CommonState.hpp"
+#include "commonstate.hpp"
 #include "param.hpp"
 
 class Mux {
