@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "param.hpp"
+#include "board.hpp"
+
 
 class Params {
 public:
@@ -173,7 +175,7 @@ public:
     /**
      * @brief Initialize parameter values
      */
-    void init_params();
+    void init(Board* _board);
 
     /**
      * @brief Set all parameters to default values
@@ -290,4 +292,5 @@ private:
     } params_t;
 
     params_t _params;
+    Board* board;
 };

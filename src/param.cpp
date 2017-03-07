@@ -6,18 +6,19 @@
 #include <stdint.h>
 #include <cstring>
 #include "param.hpp"
-#include "board.hpp"
 #include "api.hpp"
 //#include "rc.hpp" <-- I want to include this file so I can manually specify the RC type.  But I get errors if I do
 
 // function definitions
-void Params::init_params()
+void Params::init(Board* _board)
 {
+    board = _board;
+
     for (uint8_t i = 0; i < PARAMS_COUNT; i++)
     {
         init_param_int(static_cast<param_id_t>(i), "DEFAULT", 0);
     }
-    Board::initParams();
+    board->initParams();
     if (!read_params())
     {
         set_param_defaults();
@@ -197,12 +198,12 @@ void Params::set_param_defaults(void)
 
 bool Params::read_params(void)
 {
-    return Board::readParams();
+    return board->readParams();
 }
 
 bool Params::write_params(void)
 {
-    return Board::writeParams(true);
+    return board->writeParams(true);
 }
 
 //void Params::param_change_callback(param_id_t id)
@@ -250,7 +251,7 @@ bool Params::write_params(void)
 //        mixer->init_PWM();
 //        break;
 //    case PARAM_MIXER:
-//        mixer->init_mixing(common_state);
+//        mixer->init(common_state);
 //        break;
 //
 //    default:

@@ -1,13 +1,14 @@
 #include <stdbool.h>
-#include "board.hpp"
 #include "rc.hpp"
 #include "mux.hpp"
 #include "mode.hpp"
 
-void Mux::init(CommonState* _common_state, Params* _params)
+void Mux::init(CommonState* _common_state, Board* _board, Params* _params)
 {
     params = _params;
     common_state = _common_state;
+    board = _board;
+
 }
 
 bool Mux::mux_inputs()
@@ -111,11 +112,11 @@ bool Mux::mux_inputs()
     // Light to indicate override
     if (_rc_control.x.active || _rc_control.y.active || _rc_control.z.active || _rc_control.F.active)
     {
-      Board::setLed(0, true);
+      board->setLed(0, true);
     }
     else
     {
-      Board::setLed(0, false);
+      board->setLed(0, false);
     }
   }
 

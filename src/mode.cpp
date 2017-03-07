@@ -1,7 +1,6 @@
 #include <stdbool.h>
 #include "mux.hpp"
 #include "sensors.hpp"
-#include "board.hpp"
 #include "mode.hpp"
 
 
@@ -27,7 +26,7 @@ bool Mode::arm(void)
     {
         started_gyro_calibration = false;
         common_state->setToArm();
-        Board::setLed(0, true);
+        board->setLed(0, true);
         return true;
     }
     return false;
@@ -36,7 +35,7 @@ bool Mode::arm(void)
 void Mode::disarm(void)
 {
     common_state->setToDisarm();
-    Board::setLed(0, true);
+    board->setLed(0, true);
 }
 
 /// TODO: Be able to tell if the RC has become disconnected during flight
@@ -44,7 +43,7 @@ bool Mode::check_failsafe(void)
 {
     for (int8_t i = 0; i < params->get_param_int(Params::PARAM_RC_NUM_CHANNELS); i++)
     {
-        if (Board::pwmRead(i) < 900 || Board::pwmRead(i) > 2100)
+        if (board->pwmRead(i) < 900 || board->pwmRead(i) > 2100)
         {
             if (common_state->isArmed() || common_state->isDisarmed())
             {
@@ -55,7 +54,7 @@ bool Mode::check_failsafe(void)
             static uint8_t count = 0;
             if (count > 25)
             {
-                Board::toggleLed(1);
+                board->toggleLed(1);
                 count = 0;
             }
             count++;
@@ -102,8 +101,8 @@ bool Mode::check_mode(uint64_t now)
             if (common_state->getArmedState() == CommonState::DISARMED)
             {
                 // if left stick is down and to the right
-                if (Board::pwmRead(params->get_param_int(Params::PARAM_RC_F_CHANNEL)) < params->get_param_int(Params::PARAM_RC_F_BOTTOM) + params->get_param_int(Params::PARAM_ARM_THRESHOLD)
-                    && Board::pwmRead(params->get_param_int(Params::PARAM_RC_Z_CHANNEL)) > (params->get_param_int(Params::PARAM_RC_Z_CENTER) + params->get_param_int(Params::PARAM_RC_Z_RANGE) / 2)
+                if (board->pwmRead(params->get_param_int(Params::PARAM_RC_F_CHANNEL)) < params->get_param_int(Params::PARAM_RC_F_BOTTOM) + params->get_param_int(Params::PARAM_ARM_THRESHOLD)
+                    && board->pwmRead(params->get_param_int(Params::PARAM_RC_Z_CHANNEL)) > (params->get_param_int(Params::PARAM_RC_Z_CENTER) + params->get_param_int(Params::PARAM_RC_Z_RANGE) / 2)
                     - params->get_param_int(Params::PARAM_ARM_THRESHOLD))
                 {
                     time_sticks_have_been_in_arming_position += dt;
@@ -119,9 +118,9 @@ bool Mode::check_mode(uint64_t now)
             } else // _armed_state is ARMED
             {
                 // if left stick is down and to the left
-                if (Board::pwmRead(params->get_param_int(Params::PARAM_RC_F_CHANNEL)) < params->get_param_int(Params::PARAM_RC_F_BOTTOM) +
+                if (board->pwmRead(params->get_param_int(Params::PARAM_RC_F_CHANNEL)) < params->get_param_int(Params::PARAM_RC_F_BOTTOM) +
                     params->get_param_int(Params::PARAM_ARM_THRESHOLD)
-                    && Board::pwmRead(params->get_param_int(Params::PARAM_RC_Z_CHANNEL)) < (params->get_param_int(Params::PARAM_RC_Z_CENTER) - params->get_param_int(Params::PARAM_RC_Z_RANGE) / 2)
+                    && board->pwmRead(params->get_param_int(Params::PARAM_RC_Z_CHANNEL)) < (params->get_param_int(Params::PARAM_RC_Z_CENTER) - params->get_param_int(Params::PARAM_RC_Z_RANGE) / 2)
                     + params->get_param_int(Params::PARAM_ARM_THRESHOLD))
                 {
                     time_sticks_have_been_in_arming_position += dt;

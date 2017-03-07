@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "commonstate.hpp"
 #include "param.hpp"
+#include "board.hpp"
 
 class Mixer {
 public:
@@ -27,7 +28,7 @@ public:
     } mixer_type_t;
 
 public:
-    void init_mixing(CommonState* _common_state, Params* _params);
+    void init(CommonState* _common_state, Board* _board, Params* _params);
     void init_PWM();
     void mix_output();
     command_t& getCommand() { return _command; }
@@ -62,6 +63,7 @@ private:
 
     CommonState* common_state;
     Params* params;
+    Board* board;
 
     constexpr static mixer_t quadcopter_plus_mixing =
     {

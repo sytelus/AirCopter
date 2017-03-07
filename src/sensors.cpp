@@ -4,20 +4,20 @@
 #include "sensors.hpp"
 #include "estimator.hpp"
 #include "mode.hpp"
-#include "board.hpp"
 #include "turbotrig/turbovec.h"
 #include "api.hpp"
 
 
 
-void Sensors::init_sensors(CommonState* _common_state, Estimator* _estimator, Params* _params)
+void Sensors::init_sensors(CommonState* _common_state, Board* _board, Estimator* _estimator, Params* _params)
 {
     common_state = _common_state;
     estimator = _estimator;
     params = _params;
+    board = _board;
 
     uint16_t acc1G;
-    Board::initSensors(acc1G, gyro_scale, params->get_param_int(Params::PARAM_BOARD_REVISION), std::bind(&Sensors::imu_ISR, this));
+    board->initSensors(acc1G, gyro_scale, params->get_param_int(Params::PARAM_BOARD_REVISION), std::bind(&Sensors::imu_ISR, this));
     accel_scale = 9.80665f / acc1G * params->get_param_float(Params::PARAM_ACCEL_SCALE);
 }
 
@@ -37,13 +37,13 @@ bool Sensors::update_sensors()
     static uint32_t last_time_look_for_disarmed_sensors = 0;
     if (common_state->isDisarmed() && (!_sonar_present))//|| !_diff_pressure_present))
     {
-        uint32_t now = Board::millis();
+        uint32_t now = board->millis();
         if (now > (last_time_look_for_disarmed_sensors + 500))
         {
             last_time_look_for_disarmed_sensors = now;
             if (!_sonar_present)
             {
-                _sonar_present = Board::isSensorPresent(Board::SensorType::Sonar);
+                _sonar_present = board->isSensorPresent(board->SensorType::Sonar);
                 if (_sonar_present)
                 {
                     Api::logMessage("FOUND SONAR", 0);
@@ -51,7 +51,7 @@ bool Sensors::update_sensors()
             }
             if (!_diff_pressure_present)
             {
-                _diff_pressure_present = Board::isSensorPresent(Board::SensorType::DiffPressure);
+                _diff_pressure_present = board->isSensorPresent(board->SensorType::DiffPressure);
                 if (_diff_pressure_present)
                 {
                     Api::logMessage("FOUND DIFF PRESS", 0);
@@ -62,23 +62,23 @@ bool Sensors::update_sensors()
 
     if (_baro_present)
     {
-        Board::readBaro(_baro_altitude, _baro_pressure, _baro_temperature);
+        board->readBaro(_baro_altitude, _baro_pressure, _baro_temperature);
     }
 
     if (_diff_pressure_present)
     {
-        Board::readDiffPressure(_pitot_diff_pressure, _pitot_temp, _pitot_velocity);
+        board->readDiffPressure(_pitot_diff_pressure, _pitot_temp, _pitot_velocity);
     }
 
     if (_sonar_present)
     {
-        _sonar_range = Board::readSonar();
+        _sonar_range = board->readSonar();
     }
 
     if (_mag_present)
     {
         int16_t raw_mag[3] = { 0,0,0 };
-        Board::readMag(raw_mag);
+        board->readMag(raw_mag);
         _mag.x = (float)raw_mag[0];
         _mag.y = (float)raw_mag[1];
         _mag.z = (float)raw_mag[2];
@@ -117,7 +117,7 @@ bool Sensors::gyro_calibration_complete(void)
 
 void Sensors::imu_ISR(void)
 {
-    _imu_time = Board::micros();
+    _imu_time = board->micros();
     new_imu_data = true;
 }
 
@@ -128,10 +128,10 @@ bool Sensors::update_imu(void)
 
     if (new_imu_data)
     {
-        last_imu_update_ms = Board::millis();
-        Board::readAccel(accel_raw);
-        Board::readGyro(gyro_raw);
-        Board::readTemperature(temp_raw);
+        last_imu_update_ms = board->millis();
+        board->readAccel(accel_raw);
+        board->readGyro(gyro_raw);
+        board->readTemperature(temp_raw);
         new_imu_data = false;
 
         // convert temperature SI units (degC, m/s^2, rad/s)
@@ -156,13 +156,13 @@ bool Sensors::update_imu(void)
     } else
     {
         // if we have lost 1000 IMU messages something is wrong
-        if (Board::millis() > last_imu_update_ms + 1000)
+        if (board->millis() > last_imu_update_ms + 1000)
         {
             // change board revision and reset IMU
-            last_imu_update_ms = Board::millis();
+            last_imu_update_ms = board->millis();
             params->set_param_int(Params::PARAM_BOARD_REVISION, (params->get_param_int(Params::PARAM_BOARD_REVISION) >= 4) ? 2 : 5);
             uint16_t acc1G;
-            Board::initImu(acc1G, gyro_scale, params->get_param_int(Params::PARAM_BOARD_REVISION));
+            board->initImu(acc1G, gyro_scale, params->get_param_int(Params::PARAM_BOARD_REVISION));
             accel_scale = 9.80665f / acc1G * params->get_param_float(Params::PARAM_ACCEL_SCALE);
         }
         return false;

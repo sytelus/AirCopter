@@ -3,10 +3,11 @@
 
 #include "mux.hpp"
 #include "param.hpp"
+#include "board.hpp"
 
 class RC {
 public:
-    void init(CommonState* _common_state, Mux* _mux, Params* _params);
+    void init(CommonState* _common_state, Board* _board, Mux* _mux, Params* _params);
     bool rc_switch(int16_t channel);
     bool receive_rc(uint64_t now);
 
@@ -34,6 +35,7 @@ private:
     CommonState* common_state;
     Mux* mux;
     Params* params;
+    Board* board;
 };
 
 #endif

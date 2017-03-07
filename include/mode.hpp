@@ -28,4 +28,6 @@ private:
     Sensors* sensors;
     RC* rc;
     Params* params;
+    Board* board;
+
 };

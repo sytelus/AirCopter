@@ -2,12 +2,13 @@
 #include "mixer.hpp"
 #include "mode.hpp"
 #include "rc.hpp"
-#include "board.hpp"
 
-void Mixer::init_mixing(CommonState* _common_state, Params* _params)
+
+void Mixer::init(CommonState* _common_state, Board* _board, Params* _params)
 {
     common_state = _common_state;
     params = _params;
+    board = _board;
 
     // We need a better way to choosing the mixer
     mixer_to_use = *array_of_mixers[params->get_param_int(Params::PARAM_MIXER)];
@@ -34,7 +35,7 @@ void Mixer::init_PWM()
     }
     int16_t motor_refresh_rate = params->get_param_int(Params::PARAM_MOTOR_PWM_SEND_RATE);
     int16_t off_pwm = 1000;
-    Board::pwmInit(useCPPM, false, false, motor_refresh_rate, off_pwm);
+    board->pwmInit(useCPPM, false, false, motor_refresh_rate, off_pwm);
 }
 
 
@@ -58,7 +59,7 @@ void Mixer::write_motor(uint8_t index, int32_t value)
         value = 1000;
     }
     _outputs[index] = value;
-    Board::pwmWriteMotor(index, _outputs[index]);
+    board->pwmWriteMotor(index, _outputs[index]);
 }
 
 
@@ -72,7 +73,7 @@ void Mixer::write_servo(uint8_t index, int32_t value)
         value = -500;
     }
     _outputs[index] = value + 1500;
-    Board::pwmWriteMotor(index, _outputs[index]);
+    board->pwmWriteMotor(index, _outputs[index]);
 }
 
 

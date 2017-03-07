@@ -6,11 +6,12 @@
 #include "estimator.hpp"
 #include "commonstate.hpp"
 #include "param.hpp"
+#include "board.hpp"
 
 class Sensors {
 public:
     // function declarations
-    void init_sensors(CommonState* _common_state, Estimator* _estimator, Params* _params);
+    void init_sensors(CommonState* _common_state, Board* _board, Estimator* _estimator, Params* _params);
     bool update_sensors();
 
     bool start_imu_calibration(void);
@@ -65,4 +66,5 @@ private:
     Estimator* estimator;
     CommonState* common_state;
     Params* params;
+    Board* board;
 };

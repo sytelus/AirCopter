@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "commonstate.hpp"
 #include "param.hpp"
+#include "board.hpp"
 
 class Mux {
 public:
@@ -31,7 +32,7 @@ public:
         control_channel_t F;
     } control_t;
 public:
-    void init(CommonState* _common_state, Params* _params);
+    void init(CommonState* _common_state, Board* _board, Params* _params);
     bool mux_inputs();
     control_t& getRCControl() { return _rc_control; }
     control_t& getOffboardControl() { return _offboard_control; }
@@ -41,6 +42,7 @@ public:
 private:
     CommonState* common_state;
     Params* params;
+    Board* board;
 
     control_t _rc_control;
     control_t _offboard_control;

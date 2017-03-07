@@ -41,6 +41,8 @@ private:
 private:
     state_t _current_state;
     Params* params;
+    Board* board;
+
     vector_t _adaptive_gyro_bias;
 
     vector_t w1;

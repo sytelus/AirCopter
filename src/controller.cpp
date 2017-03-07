@@ -14,13 +14,14 @@
 
 
 
-void Controller::init(CommonState* _common_state, Mux* _mux, Mixer* _mixer, Estimator* _estimator, Params* _params)
+void Controller::init(CommonState* _common_state, Board* _board, Mux* _mux, Mixer* _mixer, Estimator* _estimator, Params* _params)
 {
     estimator = _estimator;
     mux = _mux;
     mixer = _mixer;
     common_state = _common_state;
     params = _params;
+    board = _board;
 
     Mux::control_t& combined_control = mux->getCombinedControl();
     Mixer::command_t& mixer_command = mixer->getCommand();
@@ -104,7 +105,7 @@ void Controller::init_pid(pid_t* pid, Params::param_id_t kp_param_id, Params::pa
     pid->max = max;
     pid->min = min;
     pid->integrator = 0.0f;
-    pid->prev_time = Board::micros()*1e-6f;
+    pid->prev_time = board->micros()*1e-6f;
     pid->differentiator = 0.0f;
     pid->prev_x = 0.0f;
     pid->tau = params->get_param_float(Params::PARAM_PID_TAU);
@@ -152,7 +153,7 @@ void Controller::run_pid(pid_t *pid, float dt)
 
     // If there is an integrator, we are armed, and throttle is high
     /// TODO: better way to figure out if throttle is high
-    if ((pid->ki_param_id < Params::PARAMS_COUNT) && (common_state->isArmed()) && (Board::pwmRead(params->get_param_int(Params::PARAM_RC_F_CHANNEL) > 1200)))
+    if ((pid->ki_param_id < Params::PARAMS_COUNT) && (common_state->isArmed()) && (board->pwmRead(params->get_param_int(Params::PARAM_RC_F_CHANNEL) > 1200)))
     {
         if (params->get_param_float(pid->ki_param_id) > 0.0)
         {

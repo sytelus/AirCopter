@@ -2,14 +2,14 @@
 #include <stdbool.h>
 #include <algorithm>
 #include "rc.hpp"
-#include "board.hpp"
 #include "api.hpp"
 
-void RC::init(CommonState* _common_state, Mux* _mux, Params* _params)
+void RC::init(CommonState* _common_state, Board* _board, Mux* _mux, Params* _params)
 {
   common_state = _common_state;
   mux = _mux;
   params = _params;
+  board = _board;
 
   _calibrate_rc = false;
 
@@ -48,11 +48,11 @@ bool RC::rc_switch(int16_t channel)
   }
   if(switches[channel - 4].direction < 0)
   {
-    return Board::pwmRead(channel) < 1500;
+    return board->pwmRead(channel) < 1500;
   }
   else
   {
-    return Board::pwmRead(channel) > 1500;
+    return board->pwmRead(channel) > 1500;
   }
 }
 
@@ -63,52 +63,52 @@ void RC::convertPWMtoRad()
   // Get Roll control command out of RC
   if (rc_control.x.type == Mux::ANGLE)
   {
-    rc_control.x.value = (float)((Board::pwmRead(params->get_param_int(Params::PARAM_RC_X_CHANNEL)) - 1500)
+    rc_control.x.value = (float)((board->pwmRead(params->get_param_int(Params::PARAM_RC_X_CHANNEL)) - 1500)
                            *2.0f*params->get_param_float(Params::PARAM_RC_MAX_ROLL))/(float)params->get_param_int(Params::PARAM_RC_X_RANGE);
   }
   else if (rc_control.x.type == Mux::RATE)
   {
-    rc_control.x.value = (float)((Board::pwmRead(params->get_param_int(Params::PARAM_RC_X_CHANNEL)) - 1500)
+    rc_control.x.value = (float)((board->pwmRead(params->get_param_int(Params::PARAM_RC_X_CHANNEL)) - 1500)
                             *2.0f*params->get_param_float(Params::PARAM_RC_MAX_ROLLRATE))/(float)params->get_param_int(Params::PARAM_RC_X_RANGE);
   }
   else if (rc_control.x.type == Mux::PASSTHROUGH)
   {
     rc_control.x.value = static_cast<float>(
-            Board::pwmRead(params->get_param_int(Params::PARAM_RC_X_CHANNEL)) - params->get_param_int(Params::PARAM_RC_X_CENTER)
+            board->pwmRead(params->get_param_int(Params::PARAM_RC_X_CHANNEL)) - params->get_param_int(Params::PARAM_RC_X_CENTER)
         );
   }
 
   // Get Pitch control command out of RC
   if (rc_control.y.type == Mux::ANGLE)
   {
-    rc_control.y.value = ((Board::pwmRead(params->get_param_int(Params::PARAM_RC_Y_CHANNEL)) - 1500)
+    rc_control.y.value = ((board->pwmRead(params->get_param_int(Params::PARAM_RC_Y_CHANNEL)) - 1500)
                             *2.0f*params->get_param_float(Params::PARAM_RC_MAX_PITCH))/(float)params->get_param_int(Params::PARAM_RC_Y_RANGE);
   }
   else if (rc_control.y.type == Mux::RATE)
   {
-    rc_control.y.value = (float)((Board::pwmRead(params->get_param_int(Params::PARAM_RC_Y_CHANNEL)) - 1500)
+    rc_control.y.value = (float)((board->pwmRead(params->get_param_int(Params::PARAM_RC_Y_CHANNEL)) - 1500)
                             *2.0f*params->get_param_float(Params::PARAM_RC_MAX_PITCHRATE))/(float)params->get_param_int(Params::PARAM_RC_Y_RANGE);
   }
   else if (rc_control.y.type == Mux::PASSTHROUGH)
   {
     rc_control.y.value = static_cast<float>(
-            Board::pwmRead(params->get_param_int(Params::PARAM_RC_Y_CHANNEL)) - 1500
+            board->pwmRead(params->get_param_int(Params::PARAM_RC_Y_CHANNEL)) - 1500
         );
   }
 
   // Get the Yaw control command type out of RC
   if (rc_control.z.type == Mux::RATE)
   {
-    rc_control.z.value = ((Board::pwmRead(params->get_param_int(Params::PARAM_RC_Z_CHANNEL)) - 1500)
+    rc_control.z.value = ((board->pwmRead(params->get_param_int(Params::PARAM_RC_Z_CHANNEL)) - 1500)
                            *2.0f*params->get_param_float(Params::PARAM_RC_MAX_YAWRATE))/(float)params->get_param_int(Params::PARAM_RC_Z_RANGE);
   }
   else if (rc_control.z.type == Mux::PASSTHROUGH)
   {
-    rc_control.z.value = static_cast<float>(Board::pwmRead(params->get_param_int(Params::PARAM_RC_Z_CHANNEL)) - 1500);
+    rc_control.z.value = static_cast<float>(board->pwmRead(params->get_param_int(Params::PARAM_RC_Z_CHANNEL)) - 1500);
   }
 
   // Finally, the Mux::THROTTLE command
-  rc_control.F.value = (float)((Board::pwmRead(params->get_param_int(Params::PARAM_RC_F_CHANNEL)) - params->get_param_int(Params::PARAM_RC_F_BOTTOM)))
+  rc_control.F.value = (float)((board->pwmRead(params->get_param_int(Params::PARAM_RC_F_CHANNEL)) - params->get_param_int(Params::PARAM_RC_F_BOTTOM)))
                         / (float)params->get_param_int(Params::PARAM_RC_F_RANGE);
 }
 
@@ -162,11 +162,11 @@ bool RC::receive_rc(uint64_t now)
   {
     // Check for stick deviation - if so, then the channel is active
     rc_control.x.active = rc_control.y.active  = rc_control.z.active =
-                             abs(Board::pwmRead(params->get_param_int(Params::PARAM_RC_X_CHANNEL)) - params->get_param_int(Params::PARAM_RC_X_CENTER)) >
+                             abs(board->pwmRead(params->get_param_int(Params::PARAM_RC_X_CHANNEL)) - params->get_param_int(Params::PARAM_RC_X_CENTER)) >
                              params->get_param_int(Params::PARAM_RC_OVERRIDE_DEVIATION)
-                             || abs(Board::pwmRead(params->get_param_int(Params::PARAM_RC_Y_CHANNEL)) - params->get_param_int(Params::PARAM_RC_Y_CENTER)) >
+                             || abs(board->pwmRead(params->get_param_int(Params::PARAM_RC_Y_CHANNEL)) - params->get_param_int(Params::PARAM_RC_Y_CENTER)) >
                              params->get_param_int(Params::PARAM_RC_OVERRIDE_DEVIATION)
-                             || abs(Board::pwmRead(params->get_param_int(Params::PARAM_RC_Z_CHANNEL)) - params->get_param_int(Params::PARAM_RC_Z_CENTER)) >
+                             || abs(board->pwmRead(params->get_param_int(Params::PARAM_RC_Z_CHANNEL)) - params->get_param_int(Params::PARAM_RC_Z_CENTER)) >
                              params->get_param_int(Params::PARAM_RC_OVERRIDE_DEVIATION);
     if (rc_control.x.active)
     {
@@ -203,14 +203,14 @@ void RC::calibrate_rc()
     // Calibrate Extents of RC Transmitter
     Api::logMessage("Calibrating RC, move sticks to full extents", 1);
     Api::logMessage("in the next 10s", 1);
-    uint64_t now = Board::micros();
+    uint64_t now = board->micros();
     static int32_t max[4] = {0, 0, 0, 0};
     static int32_t min[4] = {10000, 10000, 10000, 10000};
-    while(Board::micros() - now < 1e7)
+    while(board->micros() - now < 1e7)
     {
       for(int16_t i = 0; i < 4; i++)
       {
-        int32_t read_value = (int32_t)Board::pwmRead(i);
+        int32_t read_value = (int32_t)board->pwmRead(i);
         if(read_value > max[i])
         {
           max[i] = read_value;
@@ -220,7 +220,7 @@ void RC::calibrate_rc()
           min[i] = read_value;
         }
       }
-      Board::delay(10);
+      board->delayMillis(10);
     }
     params->set_param_int(Params::PARAM_RC_X_RANGE, max[params->get_param_int(Params::PARAM_RC_X_CHANNEL)] - min[params->get_param_int(Params::PARAM_RC_X_CHANNEL)]);
     params->set_param_int(Params::PARAM_RC_Y_RANGE, max[params->get_param_int(Params::PARAM_RC_Y_CHANNEL)] - min[params->get_param_int(Params::PARAM_RC_Y_CHANNEL)]);
@@ -230,20 +230,20 @@ void RC::calibrate_rc()
     // Calibrate Trimmed Centers
     Api::logMessage("Calibrating RC, leave sticks at center", 1);
     Api::logMessage("and Mux::THROTTLE low for next 10 seconds", 1);
-    Board::delay(5000);
-    now = Board::micros();
+    board->delayMillis(5000);
+    now = board->micros();
     static int32_t sum[4] = {0, 0, 0, 0};
     static int32_t count[4] = {0, 0, 0, 0};
 
-    while(Board::micros() - now < 5e6)
+    while(board->micros() - now < 5e6)
     {
       for(int16_t i = 0; i < 4; i++)
       {
-        int32_t read_value = (int32_t)Board::pwmRead(i);
+        int32_t read_value = (int32_t)board->pwmRead(i);
         sum[i] = sum[i] + read_value;
         count[i] = count[i] + 1;
       }
-      Board::delay(20); // RC is updated at 50 Hz
+      board->delayMillis(20); // RC is updated at 50 Hz
     }
 
     params->set_param_int(Params::PARAM_RC_X_CENTER, sum[params->get_param_int(Params::PARAM_RC_X_CHANNEL)]/count[params->get_param_int(Params::PARAM_RC_X_CHANNEL)]);
