@@ -25,6 +25,8 @@ void Mixer::init(CommonState* _common_state, Board* _board, Params* _params)
     _command.x = 0;
     _command.y = 0;
     _command.z = 0;
+
+    init_PWM();
 }
 
 void Mixer::init_PWM()

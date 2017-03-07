@@ -40,6 +40,13 @@ private:
     Params* params;
     Board* board;
     CommLink* comm_link;
+
+    uint64_t last_rc_receive_time = 0; //receive_rc
+    uint64_t time_of_last_stick_deviation = 0; //receive_rc
+    int32_t calib_max[4] = {0, 0, 0, 0};
+    int32_t calib_min[4] = {10000, 10000, 10000, 10000};
+    int32_t calib_sum[4] = {0, 0, 0, 0};
+    int32_t calib_count[4] = {0, 0, 0, 0};
 };
 
 

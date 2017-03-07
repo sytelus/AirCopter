@@ -33,6 +33,10 @@ private:
     Params* params;
     Board* board;
 
+    bool started_gyro_calibration = false; //arm
+    uint8_t blink_count = 0; //check_failsafe
+    uint64_t prev_time = 0; //check_mode
+    uint32_t time_sticks_have_been_in_arming_position = 0; //check_mode
 };
 
 

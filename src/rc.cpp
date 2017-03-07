@@ -124,8 +124,7 @@ bool RC::receive_rc(uint64_t now)
     calibrate_rc();
   }
   // if it has been more than 20ms then look for new RC values and parse them
-  static uint64_t last_rc_receive_time = 0;
-  static uint64_t time_of_last_stick_deviation = 0;
+
 
   if (now - last_rc_receive_time < 20000)
   {
@@ -208,52 +207,49 @@ void RC::calibrate_rc()
     comm_link->logMessage("Calibrating RC, move sticks to full extents", 1);
     comm_link->logMessage("in the next 10s", 1);
     uint64_t now = board->micros();
-    static int32_t max[4] = {0, 0, 0, 0};
-    static int32_t min[4] = {10000, 10000, 10000, 10000};
+
     while(board->micros() - now < 1e7)
     {
       for(int16_t i = 0; i < 4; i++)
       {
         int32_t read_value = (int32_t)board->pwmRead(i);
-        if(read_value > max[i])
+        if(read_value > calib_max[i])
         {
-          max[i] = read_value;
+          calib_max[i] = read_value;
         }
-        if(read_value < min[i])
+        if(read_value < calib_min[i])
         {
-          min[i] = read_value;
+          calib_min[i] = read_value;
         }
       }
       board->delayMillis(10);
     }
-    params->set_param_int(Params::PARAM_RC_X_RANGE, max[params->get_param_int(Params::PARAM_RC_X_CHANNEL)] - min[params->get_param_int(Params::PARAM_RC_X_CHANNEL)]);
-    params->set_param_int(Params::PARAM_RC_Y_RANGE, max[params->get_param_int(Params::PARAM_RC_Y_CHANNEL)] - min[params->get_param_int(Params::PARAM_RC_Y_CHANNEL)]);
-    params->set_param_int(Params::PARAM_RC_Z_RANGE, max[params->get_param_int(Params::PARAM_RC_Z_CHANNEL)] - min[params->get_param_int(Params::PARAM_RC_Z_CHANNEL)]);
-    params->set_param_int(Params::PARAM_RC_F_RANGE, max[params->get_param_int(Params::PARAM_RC_F_CHANNEL)] - min[params->get_param_int(Params::PARAM_RC_F_CHANNEL)]);
+    params->set_param_int(Params::PARAM_RC_X_RANGE, calib_max[params->get_param_int(Params::PARAM_RC_X_CHANNEL)] - calib_min[params->get_param_int(Params::PARAM_RC_X_CHANNEL)]);
+    params->set_param_int(Params::PARAM_RC_Y_RANGE, calib_max[params->get_param_int(Params::PARAM_RC_Y_CHANNEL)] - calib_min[params->get_param_int(Params::PARAM_RC_Y_CHANNEL)]);
+    params->set_param_int(Params::PARAM_RC_Z_RANGE, calib_max[params->get_param_int(Params::PARAM_RC_Z_CHANNEL)] - calib_min[params->get_param_int(Params::PARAM_RC_Z_CHANNEL)]);
+    params->set_param_int(Params::PARAM_RC_F_RANGE, calib_max[params->get_param_int(Params::PARAM_RC_F_CHANNEL)] - calib_min[params->get_param_int(Params::PARAM_RC_F_CHANNEL)]);
 
     // Calibrate Trimmed Centers
     comm_link->logMessage("Calibrating RC, leave sticks at center", 1);
     comm_link->logMessage("and Mux::THROTTLE low for next 10 seconds", 1);
     board->delayMillis(5000);
     now = board->micros();
-    static int32_t sum[4] = {0, 0, 0, 0};
-    static int32_t count[4] = {0, 0, 0, 0};
 
     while(board->micros() - now < 5e6)
     {
       for(int16_t i = 0; i < 4; i++)
       {
         int32_t read_value = (int32_t)board->pwmRead(i);
-        sum[i] = sum[i] + read_value;
-        count[i] = count[i] + 1;
+        calib_sum[i] = calib_sum[i] + read_value;
+        calib_count[i] = calib_count[i] + 1;
       }
       board->delayMillis(20); // RC is updated at 50 Hz
     }
 
-    params->set_param_int(Params::PARAM_RC_X_CENTER, sum[params->get_param_int(Params::PARAM_RC_X_CHANNEL)]/count[params->get_param_int(Params::PARAM_RC_X_CHANNEL)]);
-    params->set_param_int(Params::PARAM_RC_Y_CENTER, sum[params->get_param_int(Params::PARAM_RC_Y_CHANNEL)]/count[params->get_param_int(Params::PARAM_RC_Y_CHANNEL)]);
-    params->set_param_int(Params::PARAM_RC_Z_CENTER, sum[params->get_param_int(Params::PARAM_RC_Z_CHANNEL)]/count[params->get_param_int(Params::PARAM_RC_Z_CHANNEL)]);
-    params->set_param_int(Params::PARAM_RC_F_BOTTOM, sum[params->get_param_int(Params::PARAM_RC_F_CHANNEL)]/count[params->get_param_int(Params::PARAM_RC_F_CHANNEL)]);
+    params->set_param_int(Params::PARAM_RC_X_CENTER, calib_sum[params->get_param_int(Params::PARAM_RC_X_CHANNEL)]/calib_count[params->get_param_int(Params::PARAM_RC_X_CHANNEL)]);
+    params->set_param_int(Params::PARAM_RC_Y_CENTER, calib_sum[params->get_param_int(Params::PARAM_RC_Y_CHANNEL)]/calib_count[params->get_param_int(Params::PARAM_RC_Y_CHANNEL)]);
+    params->set_param_int(Params::PARAM_RC_Z_CENTER, calib_sum[params->get_param_int(Params::PARAM_RC_Z_CHANNEL)]/calib_count[params->get_param_int(Params::PARAM_RC_Z_CHANNEL)]);
+    params->set_param_int(Params::PARAM_RC_F_BOTTOM, calib_sum[params->get_param_int(Params::PARAM_RC_F_CHANNEL)]/calib_count[params->get_param_int(Params::PARAM_RC_F_CHANNEL)]);
   }
 
   // calculate Trim values (in terms of SI units)

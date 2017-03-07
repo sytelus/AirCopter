@@ -36,7 +36,6 @@ void Firmware::setup()
 
     // Initialize Motor Mixing
     mixer.init(&common_state, board, &params);
-    mixer.init_PWM();
 
     controller.init(&common_state, board, &mux, &mixer, &estimator, &params, comm_link);
 

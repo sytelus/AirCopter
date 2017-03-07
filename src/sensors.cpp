@@ -36,7 +36,6 @@ bool Sensors::update_sensors()
     // These sensors need power to respond, so they might not have been
     // detected on startup, but will be detected whenever power is applied
     // to the 5V rail.
-    static uint32_t last_time_look_for_disarmed_sensors = 0;
     if (common_state->isDisarmed() && (!_sonar_present))//|| !_diff_pressure_present))
     {
         uint32_t now = board->millis();
@@ -126,8 +125,6 @@ void Sensors::imu_ISR(void)
 
 bool Sensors::update_imu(void)
 {
-    static uint32_t last_imu_update_ms = 0;
-
     if (new_imu_data)
     {
         last_imu_update_ms = board->millis();
@@ -174,15 +171,13 @@ bool Sensors::update_imu(void)
 
 void Sensors::calibrate_gyro()
 {
-    static uint16_t count = 0;
-    static vector_t gyro_sum = { 0.0f, 0.0f, 0.0f };
-    gyro_sum = vector_add(gyro_sum, _gyro);
-    count++;
+    calib_gyro_sum = vector_add(calib_gyro_sum, _gyro);
+    calib_gyro_count++;
 
-    if (count > 100)
+    if (calib_gyro_count > 100)
     {
         // Gyros are simple.  Just find the average during the calibration
-        vector_t gyro_bias = scalar_multiply(1.0f / (float)count, gyro_sum);
+        vector_t gyro_bias = scalar_multiply(1.0f / (float)calib_gyro_count, calib_gyro_sum);
 
         if (sqrd_norm(gyro_bias) < 1.0)
         {
@@ -199,26 +194,21 @@ void Sensors::calibrate_gyro()
 
         // reset calibration in case we do it again
         calibrating_gyro_flag = false;
-        count = 0;
-        gyro_sum.x = 0.0f;
-        gyro_sum.y = 0.0f;
-        gyro_sum.z = 0.0f;
+        calib_gyro_count = 0;
+        calib_gyro_sum.x = 0.0f;
+        calib_gyro_sum.y = 0.0f;
+        calib_gyro_sum.z = 0.0f;
     }
 }
 
 
 void Sensors::calibrate_accel(void)
 {
-    static uint16_t count = 0;
-    static vector_t acc_sum = { 0.0f, 0.0f, 0.0f };
-    static const vector_t gravity = { 0.0f, 0.0f, 9.80665f };
-    static float acc_temp_sum = 0.0f;
-
-    acc_sum = vector_add(vector_add(acc_sum, _accel), gravity);
+    calib_accel_sum = vector_add(vector_add(calib_accel_sum, _accel), gravity);
     acc_temp_sum += _imu_temperature;
-    count++;
+    calib_accel_count++;
 
-    if (count > 1000)
+    if (calib_accel_count > 1000)
     {
         // The temperature bias is calculated using a least-squares regression.
         // This is computationally intensive, so it is done by the onboard computer in
@@ -234,7 +224,7 @@ void Sensors::calibrate_accel(void)
         // Which is why this line is so confusing. What we are doing, is first removing
         // the contribution of temperature to the measurements during the calibration,
         // Then we are dividing by the number of measurements.
-        vector_t accel_bias = scalar_multiply(1.0f / (float)count, vector_sub(acc_sum, scalar_multiply(acc_temp_sum, accel_temp_bias)));
+        vector_t accel_bias = scalar_multiply(1.0f / (float)calib_accel_count, vector_sub(calib_accel_sum, scalar_multiply(acc_temp_sum, accel_temp_bias)));
 
         // Sanity Check -
         // If the accelerometer is upside down or being spun around during the calibration,
@@ -272,10 +262,10 @@ void Sensors::calibrate_accel(void)
         }
 
         // reset calibration in case we do it again
-        count = 0;
-        acc_sum.x = 0.0f;
-        acc_sum.y = 0.0f;
-        acc_sum.z = 0.0f;
+        calib_accel_count = 0;
+        calib_accel_sum.x = 0.0f;
+        calib_accel_sum.y = 0.0f;
+        calib_accel_sum.z = 0.0f;
         acc_temp_sum = 0.0f;
     }
 }

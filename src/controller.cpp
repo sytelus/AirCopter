@@ -186,9 +186,6 @@ void Controller::run_controller()
     Mux::control_t& combined_control = mux->getCombinedControl();
     Mixer::command_t& mixer_command = mixer->getCommand();
 
-    // Time calculation
-    static float prev_time = 0.0f;
-
     if (prev_time < 0.0001f)
     {
         prev_time = estimator->getState().now_us * 1e-6f;

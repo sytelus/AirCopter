@@ -91,7 +91,6 @@ void Estimator::run_LPF(const vector_t& accel, const vector_t& gyro)
 
 void Estimator::run_estimator(const vector_t& accel, const vector_t& gyro, const uint64_t& imu_time)
 {
-  static float kp, ki;
   _current_state.now_us = imu_time;
   if (last_time == 0 || _current_state.now_us <= last_time)
   {

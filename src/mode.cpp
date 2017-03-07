@@ -19,7 +19,6 @@ void Mode::init(CommonState* _common_state, Sensors* _sensors, RC* _rc, Params* 
 
 bool Mode::arm(void)
 {
-    static bool started_gyro_calibration = false;
     if (!started_gyro_calibration && common_state->isDisarmed())
     {
         sensors->start_gyro_calibration();
@@ -54,13 +53,12 @@ bool Mode::check_failsafe(void)
             }
 
             // blink LED
-            static uint8_t count = 0;
-            if (count > 25)
+            if (blink_count > 25)
             {
                 board->toggleLed(1);
-                count = 0;
+                blink_count = 0;
             }
-            count++;
+            blink_count++;
             return true;
         }
     }
@@ -79,9 +77,6 @@ bool Mode::check_failsafe(void)
 
 bool Mode::check_mode(uint64_t now)
 {
-    static uint64_t prev_time = 0;
-    static uint32_t time_sticks_have_been_in_arming_position = 0;
-
     // see it has been at least 20 ms
     uint32_t dt = static_cast<uint32_t>(now - prev_time);
     if (dt < 20000)
