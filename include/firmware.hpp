@@ -21,6 +21,17 @@ public:
     void setup();
     void loop();
 
+    //getters
+    Board* getBoard() { return board; }
+    CommLink* getCommLink() { return comm_link; }
+    Estimator* getEstimator() { return &estimator; }
+    Sensors* getSensors() { return &sensors; }
+    Mux* getMux() { return &mux; }
+    Mixer* getMixer() { return &mixer; }
+    Controller* getController() { return &controller; }
+    RC* getRC() { return &rc; }
+    Mode* getMode() { return &mode; }
+
 private:
     //params and shared state
     Params params;
