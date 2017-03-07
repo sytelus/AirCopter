@@ -62,11 +62,8 @@ void Firmware::loop()
     /*********************/
     /***  Post-Process ***/
     /*********************/
-    // internal timers figure out what and when to send
-    comm_link->send(board->micros()); // 165 | 27 | 2
-
-    // receive messages fom communication stack
-    comm_link->receive(); // 159 | 1 | 1
+    //Let communication stack send and recieve messages
+    comm_link->update(); // 165 | 27 | 2
 
     // update the armed_states, an internal timer runs this at a fixed rate
     mode.check_mode(board->micros()); // 108 | 1 | 1
