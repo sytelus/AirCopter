@@ -14,6 +14,7 @@ public:
     virtual void setStreamingRate(uint16_t param_id, int32_t rate) override {}
     virtual void notifyParamChange(uint16_t param_id, int32_t value) override {}
     virtual void logMessage(const char* message, uint8_t error_level) override {}
+    virtual void notifyControllerUpdated() {}
 };
 
 

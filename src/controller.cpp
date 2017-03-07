@@ -16,7 +16,7 @@
 namespace rosflight {
 
 
-void Controller::init(CommonState* _common_state, Board* _board, Mux* _mux, Mixer* _mixer, Estimator* _estimator, Params* _params)
+void Controller::init(CommonState* _common_state, Board* _board, Mux* _mux, Mixer* _mixer, Estimator* _estimator, Params* _params, CommLink* _comm_link)
 {
     estimator = _estimator;
     mux = _mux;
@@ -24,6 +24,7 @@ void Controller::init(CommonState* _common_state, Board* _board, Mux* _mux, Mixe
     common_state = _common_state;
     params = _params;
     board = _board;
+    comm_link = _comm_link;
 
     Mux::control_t& combined_control = mux->getCombinedControl();
     Mixer::command_t& mixer_command = mixer->getCommand();
@@ -226,21 +227,7 @@ void Controller::run_controller()
   //  else // PASSTHROUGH
     mixer_command.F = combined_control.F.value;
 
-    static uint32_t counter = 0;
-    if (counter > 100)
-    {
-        //TODO: handle this?
-      //mavlink_send_named_command_struct("RC", _rc_control);
-      //mavlink_send_named_command_struct("offboard", _offboard_control);
-      //mavlink_send_named_command_struct("combined", _combined_control);
-  //    mavlink_send_named_value_float("command_F", mixer_command.F);
-  //    mavlink_send_named_value_float("command_x", mixer_command.x);
-  //    mavlink_send_named_value_float("command_y", mixer_command.y);
-  //    mavlink_send_named_value_float("command_z", mixer_command.z);
-  //    mavlink_send_named_value_float("yaw_int", pid_yaw_rate.integrator);
-        counter = 0;
-    }
-    counter++;
+    comm_link->notifyControllerUpdated();
 }
 
 

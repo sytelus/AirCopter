@@ -38,7 +38,7 @@ void Firmware::setup()
     mixer.init(&common_state, board, &params);
     mixer.init_PWM();
 
-    controller.init(&common_state, board, &mux, &mixer, &estimator, &params);
+    controller.init(&common_state, board, &mux, &mixer, &estimator, &params, comm_link);
 
     rc.init(&common_state, board, &mux, &params, comm_link);
 
@@ -66,7 +66,7 @@ void Firmware::loop()
     // internal timers figure out what and when to send
     comm_link->send(board->micros()); // 165 | 27 | 2
 
-    // receive mavlink messages
+    // receive messages fom communication stack
     comm_link->receive(); // 159 | 1 | 1
 
     // update the armed_states, an internal timer runs this at a fixed rate

@@ -15,7 +15,7 @@ namespace rosflight {
 class Controller {
 public:
     void run_controller();
-    void init(CommonState* _common_state, Board* _board, Mux* _mux, Mixer* _mixer, Estimator* _estimator, Params* _params);
+    void init(CommonState* _common_state, Board* _board, Mux* _mux, Mixer* _mixer, Estimator* _estimator, Params* _params, CommLink* _comm_link);
 
 private:
     typedef struct
@@ -52,6 +52,7 @@ private:
     Mixer* mixer;
     Params* params;
     Board* board;
+    CommLink* comm_link;
 
     void init_pid(pid_t* pid, Params::param_id_t kp_param_id, Params::param_id_t ki_param_id, Params::param_id_t kd_param_id, float* current_x, float* current_xdot, float* commanded_x, float* output, float max, float min);
     void run_pid(pid_t* pid, float dt);

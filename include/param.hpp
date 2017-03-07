@@ -22,7 +22,7 @@ public:
         PARAM_BAUD_RATE,
 
         /*****************************/
-        /*** MAVLINK CONFIGURATION ***/
+        /*** COMM LINK CONFIGURATION ***/
         /*****************************/
         PARAM_SYSTEM_ID,
         PARAM_STREAM_HEARTBEAT_RATE,
@@ -201,7 +201,7 @@ public:
      * @brief Callback for executing actions that need to be taken when a parameter value changes
      * @param id The ID of the parameter that was changed
      */
-    //void param_change_callback(param_id_t id);
+    void param_change_callback(param_id_t id);
 
     /**
      * @brief Gets the id of a parameter from its name
