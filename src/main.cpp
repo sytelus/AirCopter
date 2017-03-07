@@ -11,6 +11,7 @@ int main(void)
 
     while (true) {
         firmware.loop();
+        firmware.getBoard()->delayMicros(2000);
     }
 }
 

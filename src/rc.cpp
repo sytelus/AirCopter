@@ -123,16 +123,15 @@ bool RC::receive_rc(uint64_t now)
   {
     calibrate_rc();
   }
+  
   // if it has been more than 20ms then look for new RC values and parse them
-
-
   if (now - last_rc_receive_time < 20000)
   {
     return false;
   }
   last_rc_receive_time = now;
+  
   // Get timestamp for deadband control lag
-
   Mux::control_t& rc_control = mux->rc_control();
 
   // Figure out the desired control type from the switches and params
