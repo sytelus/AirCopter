@@ -6,6 +6,9 @@
 #include "param.hpp"
 #include "board.hpp"
 
+
+namespace rosflight {
+
 class Mux {
 public:
     typedef enum
@@ -56,3 +59,5 @@ private:
         {true, RATE, 0.0},
         {true, THROTTLE, 0.0}};
 };
+
+} //namespace

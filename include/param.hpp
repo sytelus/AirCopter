@@ -4,7 +4,10 @@
 #include <stdint.h>
 #include "param.hpp"
 #include "board.hpp"
+#include "commlink.hpp"
 
+
+namespace rosflight {
 
 class Params {
 public:
@@ -175,7 +178,7 @@ public:
     /**
      * @brief Initialize parameter values
      */
-    void init(Board* _board);
+    void init(Board* _board, CommLink* _comm_link);
 
     /**
      * @brief Set all parameters to default values
@@ -293,4 +296,9 @@ private:
 
     params_t _params;
     Board* board;
+    CommLink* comm_link;
+
 };
+
+
+} //namespace

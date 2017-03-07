@@ -9,6 +9,9 @@
 #include "mixer.hpp"
 #include "commonstate.hpp"
 
+
+namespace rosflight {
+
 class Controller {
 public:
     void run_controller();
@@ -53,3 +56,5 @@ private:
     void init_pid(pid_t* pid, Params::param_id_t kp_param_id, Params::param_id_t ki_param_id, Params::param_id_t kd_param_id, float* current_x, float* current_xdot, float* commanded_x, float* output, float max, float min);
     void run_pid(pid_t* pid, float dt);
 };
+
+} //namespace

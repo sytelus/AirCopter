@@ -1,5 +1,8 @@
 #pragma once
 
+
+namespace rosflight {
+
 class CommonState {
 public:
     typedef enum
@@ -37,3 +40,6 @@ public:
 private:
     armed_state_t _armed_state;
 };
+
+
+} //namespace

@@ -6,6 +6,9 @@
 #include <turbotrig/turbovec.h>
 #include "param.hpp"
 
+
+namespace rosflight {
+
 class Estimator {
 public:
     typedef struct
@@ -28,7 +31,7 @@ public:
     } state_t;
 
 public:
-    void init_estimator(Params* _params, bool use_matrix_exponential, bool use_quadratic_integration, bool use_accelerometer);
+    void init(Params* _params, bool use_matrix_exponential, bool use_quadratic_integration, bool use_accelerometer);
     void reset_state();
     void reset_adaptive_bias();
     void run_estimator(const vector_t& accel, const vector_t& gyro, const uint64_t& imu_time);
@@ -63,3 +66,6 @@ private:
     vector_t _accel_LPF;
     vector_t _gyro_LPF;
 };
+
+
+} //namespace

@@ -8,13 +8,15 @@
 #include "mixer.hpp"
 #include "rc.hpp"
 #include "board.hpp"
-#include "api.hpp"
+#include "commlink.hpp"
 #include "commonstate.hpp"
 
 
+namespace rosflight {
+
 class Firmware {
 public:
-    Firmware(Board* _board);
+    Firmware(Board* _board, CommLink* _comm_link);
 
     void setup();
     void loop();
@@ -26,6 +28,7 @@ private:
 
     //objects we use
     Board* board;
+    CommLink* comm_link;
     Estimator estimator;
     Sensors sensors;
     Mux mux;
@@ -38,3 +41,5 @@ private:
     vector_t accel, gyro;
     uint64_t imu_time;
 };
+
+} //namespace

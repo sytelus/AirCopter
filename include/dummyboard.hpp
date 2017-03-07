@@ -2,11 +2,14 @@
 
 #include "board.hpp"
 
-class DummyBoard : Board {
+
+namespace rosflight {
+
+class DummyBoard : public Board {
 public:
     virtual void init() override {}
     virtual uint64_t micros() override { return 0; }
-    virtual uint32_t millis() override {}
+    virtual uint32_t millis() override { return 0; }
     virtual void initSensors(uint16_t& acc1G, float& gyro_scale, int boardVersion, const std::function<void(void)>& imu_updated_callback) override {}
     virtual bool isSensorPresent(SensorType type) override { return false; }
     virtual uint16_t pwmRead(int16_t channel) override { return 0; }
@@ -28,3 +31,6 @@ public:
     virtual void delayMicros(uint32_t us) override {}
     virtual void delayMillis(uint32_t ms) override {}
 };
+
+
+} //namespace

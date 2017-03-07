@@ -4,10 +4,13 @@
 #include "mux.hpp"
 #include "param.hpp"
 #include "board.hpp"
+#include "commlink.hpp"
+
+namespace rosflight {
 
 class RC {
 public:
-    void init(CommonState* _common_state, Board* _board, Mux* _mux, Params* _params);
+    void init(CommonState* _common_state, Board* _board, Mux* _mux, Params* _params, CommLink* _comm_link);
     bool rc_switch(int16_t channel);
     bool receive_rc(uint64_t now);
 
@@ -36,6 +39,9 @@ private:
     Mux* mux;
     Params* params;
     Board* board;
+    CommLink* comm_link;
 };
 
+
+} //namespace
 #endif

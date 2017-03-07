@@ -6,6 +6,9 @@
 #include "commonstate.hpp"
 #include "param.hpp"
 
+
+namespace rosflight {
+
 class Mode {
 public:
     typedef enum
@@ -31,3 +34,6 @@ private:
     Board* board;
 
 };
+
+
+} //namespace

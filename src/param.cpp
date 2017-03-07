@@ -6,13 +6,17 @@
 #include <stdint.h>
 #include <cstring>
 #include "param.hpp"
-#include "api.hpp"
 //#include "rc.hpp" <-- I want to include this file so I can manually specify the RC type.  But I get errors if I do
 
+
+namespace rosflight {
+
+
 // function definitions
-void Params::init(Board* _board)
+void Params::init(Board* _board, CommLink* _comm_link)
 {
     board = _board;
+    comm_link = _comm_link;
 
     for (uint8_t i = 0; i < PARAMS_COUNT; i++)
     {
@@ -211,37 +215,37 @@ bool Params::write_params(void)
 //    switch (id)
 //    {
 //    case PARAM_SYSTEM_ID:
-//        Api::setSysID(get_param_int(PARAM_SYSTEM_ID));
+//        comm_link->setSysID(get_param_int(PARAM_SYSTEM_ID));
 //        break;
 //    case PARAM_STREAM_HEARTBEAT_RATE:
-//        Api::setStreamingRate(PARAM_STREAM_HEARTBEAT_RATE, get_param_int(PARAM_STREAM_HEARTBEAT_RATE));
+//        comm_link->setStreamingRate(PARAM_STREAM_HEARTBEAT_RATE, get_param_int(PARAM_STREAM_HEARTBEAT_RATE));
 //        break;
 //
 //    case PARAM_STREAM_ATTITUDE_RATE:
-//        Api::setStreamingRate(PARAM_STREAM_ATTITUDE_RATE, get_param_int(PARAM_STREAM_ATTITUDE_RATE));
+//        comm_link->setStreamingRate(PARAM_STREAM_ATTITUDE_RATE, get_param_int(PARAM_STREAM_ATTITUDE_RATE));
 //        break;
 //
 //    case PARAM_STREAM_IMU_RATE:
-//        Api::setStreamingRate(PARAM_STREAM_IMU_RATE, get_param_int(PARAM_STREAM_IMU_RATE));
+//        comm_link->setStreamingRate(PARAM_STREAM_IMU_RATE, get_param_int(PARAM_STREAM_IMU_RATE));
 //        break;
 //    case PARAM_STREAM_AIRSPEED_RATE:
-//        Api::setStreamingRate(PARAM_STREAM_AIRSPEED_RATE, get_param_int(PARAM_STREAM_AIRSPEED_RATE));
+//        comm_link->setStreamingRate(PARAM_STREAM_AIRSPEED_RATE, get_param_int(PARAM_STREAM_AIRSPEED_RATE));
 //        break;
 //    case PARAM_STREAM_SONAR_RATE:
-//        Api::setStreamingRate(PARAM_STREAM_SONAR_RATE, get_param_int(PARAM_STREAM_SONAR_RATE));
+//        comm_link->setStreamingRate(PARAM_STREAM_SONAR_RATE, get_param_int(PARAM_STREAM_SONAR_RATE));
 //        break;
 //    case  PARAM_STREAM_BARO_RATE:
-//        Api::setStreamingRate(PARAM_STREAM_BARO_RATE, get_param_int(PARAM_STREAM_BARO_RATE));
+//        comm_link->setStreamingRate(PARAM_STREAM_BARO_RATE, get_param_int(PARAM_STREAM_BARO_RATE));
 //        break;
 //    case  PARAM_STREAM_MAG_RATE:
-//        Api::setStreamingRate(PARAM_STREAM_MAG_RATE, get_param_int(PARAM_STREAM_MAG_RATE));
+//        comm_link->setStreamingRate(PARAM_STREAM_MAG_RATE, get_param_int(PARAM_STREAM_MAG_RATE));
 //        break;
 //
 //    case PARAM_STREAM_SERVO_OUTPUT_RAW_RATE:
-//        Api::setStreamingRate(PARAM_STREAM_SERVO_OUTPUT_RAW_RATE, get_param_int(PARAM_STREAM_SERVO_OUTPUT_RAW_RATE));
+//        comm_link->setStreamingRate(PARAM_STREAM_SERVO_OUTPUT_RAW_RATE, get_param_int(PARAM_STREAM_SERVO_OUTPUT_RAW_RATE));
 //        break;
 //    case PARAM_STREAM_RC_RAW_RATE:
-//        Api::setStreamingRate(PARAM_STREAM_RC_RAW_RATE, get_param_int(PARAM_STREAM_RC_RAW_RATE));
+//        comm_link->setStreamingRate(PARAM_STREAM_RC_RAW_RATE, get_param_int(PARAM_STREAM_RC_RAW_RATE));
 //        break;
 //
 //    case PARAM_RC_TYPE:
@@ -312,7 +316,7 @@ bool Params::set_param_int(param_id_t id, int32_t value)
     {
         _params.values[id] = value;
         //param_change_callback(id);
-        Api::notifyParamChange(id, value);
+        comm_link->notifyParamChange(id, value);
         return true;
     }
     return false;
@@ -333,3 +337,6 @@ bool Params::set_param_by_name_float(const char name[PARAMS_NAME_LENGTH], float 
 {
     return set_param_by_name_int(name, *(int32_t *)&value);
 }
+
+
+} //namespace

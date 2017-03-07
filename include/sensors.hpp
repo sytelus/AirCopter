@@ -7,11 +7,14 @@
 #include "commonstate.hpp"
 #include "param.hpp"
 #include "board.hpp"
+#include "commlink.hpp"
+
+namespace rosflight {
 
 class Sensors {
 public:
     // function declarations
-    void init_sensors(CommonState* _common_state, Board* _board, Estimator* _estimator, Params* _params);
+    void init(CommonState* _common_state, Board* _board, Estimator* _estimator, Params* _params, CommLink* _comm_link);
     bool update_sensors();
 
     bool start_imu_calibration(void);
@@ -67,4 +70,8 @@ private:
     CommonState* common_state;
     Params* params;
     Board* board;
+    CommLink* comm_link;
+
 };
+
+} //namespace

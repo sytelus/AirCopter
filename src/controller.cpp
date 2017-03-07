@@ -13,6 +13,8 @@
 #include "controller.hpp"
 
 
+namespace rosflight {
+
 
 void Controller::init(CommonState* _common_state, Board* _board, Mux* _mux, Mixer* _mixer, Estimator* _estimator, Params* _params)
 {
@@ -240,3 +242,6 @@ void Controller::run_controller()
     }
     counter++;
 }
+
+
+} //namespace

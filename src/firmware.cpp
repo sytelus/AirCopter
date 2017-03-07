@@ -5,8 +5,10 @@
 #include <stdlib.h>
 #include <turbotrig/turbovec.h>
 
-Firmware::Firmware(Board* _board)
-    : board(_board)
+namespace rosflight {
+
+Firmware::Firmware(Board* _board, CommLink* _comm_link)
+    : board(_board), comm_link(_comm_link)
 {
 }
 
@@ -15,20 +17,20 @@ void Firmware::setup()
     board->init();
 
     //initialize parameters source such as EPROM
-    params.init(board);
+    params.init(board, comm_link);
 
     // Initialize communication stack such as MavLink
-    Api::init();
+    comm_link->init();
 
 
     // Initialize Estimator
     // mat_exp <- greater accuracy, but adds ~90 us
     // quadratic_integration <- some additional accuracy, adds ~20 us
     // accelerometer correction <- if using angle mode, this is required, adds ~70 us
-    estimator.init_estimator(&params, false, false, true);
+    estimator.init(&params, false, false, true);
 
     // Initialize Sensors
-    sensors.init_sensors(&common_state, board, &estimator, &params);
+    sensors.init(&common_state, board, &estimator, &params, comm_link);
 
     mux.init(&common_state, board, &params);
 
@@ -38,7 +40,7 @@ void Firmware::setup()
 
     controller.init(&common_state, board, &mux, &mixer, &estimator, &params);
 
-    rc.init(&common_state, board, &mux, &params);
+    rc.init(&common_state, board, &mux, &params, comm_link);
 
     mode.init(&common_state, &sensors, &rc, &params);
 
@@ -62,10 +64,10 @@ void Firmware::loop()
     /***  Post-Process ***/
     /*********************/
     // internal timers figure out what and when to send
-    Api::send(board->micros()); // 165 | 27 | 2
+    comm_link->send(board->micros()); // 165 | 27 | 2
 
     // receive mavlink messages
-    Api::receive(); // 159 | 1 | 1
+    comm_link->receive(); // 159 | 1 | 1
 
     // update the armed_states, an internal timer runs this at a fixed rate
     mode.check_mode(board->micros()); // 108 | 1 | 1
@@ -76,3 +78,6 @@ void Firmware::loop()
     // update commands (internal logic tells whether or not we should do anything or not)
     mux.mux_inputs(); // 6 | 1 | 1
 }
+
+
+} //namespace

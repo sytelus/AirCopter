@@ -3,6 +3,9 @@
 #include <cstdint>
 #include <functional>
 
+
+namespace rosflight {
+
 class Board {
 public: //types
     enum SensorType {
@@ -39,3 +42,6 @@ public:
     virtual void delayMicros(uint32_t us) = 0;
     virtual void delayMillis(uint32_t ms) = 0;
 };
+
+
+} //namespace

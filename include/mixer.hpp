@@ -6,6 +6,9 @@
 #include "param.hpp"
 #include "board.hpp"
 
+
+namespace rosflight {
+
 class Mixer {
 public:
     typedef struct
@@ -137,3 +140,6 @@ private:
 
     mixer_t mixer_to_use;
 };
+
+
+} //namespace

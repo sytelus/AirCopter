@@ -5,16 +5,18 @@
 #include "estimator.hpp"
 #include "mode.hpp"
 #include "turbotrig/turbovec.h"
-#include "api.hpp"
 
 
+namespace rosflight {
 
-void Sensors::init_sensors(CommonState* _common_state, Board* _board, Estimator* _estimator, Params* _params)
+
+void Sensors::init(CommonState* _common_state, Board* _board, Estimator* _estimator, Params* _params, CommLink* _comm_link)
 {
     common_state = _common_state;
     estimator = _estimator;
     params = _params;
     board = _board;
+    comm_link = _comm_link;
 
     uint16_t acc1G;
     board->initSensors(acc1G, gyro_scale, params->get_param_int(Params::PARAM_BOARD_REVISION), std::bind(&Sensors::imu_ISR, this));
@@ -46,7 +48,7 @@ bool Sensors::update_sensors()
                 _sonar_present = board->isSensorPresent(board->SensorType::Sonar);
                 if (_sonar_present)
                 {
-                    Api::logMessage("FOUND SONAR", 0);
+                    comm_link->logMessage("FOUND SONAR", 0);
                 }
             }
             if (!_diff_pressure_present)
@@ -54,7 +56,7 @@ bool Sensors::update_sensors()
                 _diff_pressure_present = board->isSensorPresent(board->SensorType::DiffPressure);
                 if (_diff_pressure_present)
                 {
-                    Api::logMessage("FOUND DIFF PRESS", 0);
+                    comm_link->logMessage("FOUND DIFF PRESS", 0);
                 }
             }
         }
@@ -192,7 +194,7 @@ void Sensors::calibrate_gyro()
             estimator->reset_adaptive_bias();
         } else
         {
-            Api::logMessage("Too much movement for gyro cal", 3);
+            comm_link->logMessage("Too much movement for gyro cal", 3);
         }
 
         // reset calibration in case we do it again
@@ -242,7 +244,7 @@ void Sensors::calibrate_accel(void)
             params->set_param_float(Params::PARAM_ACC_X_BIAS, accel_bias.x);
             params->set_param_float(Params::PARAM_ACC_Y_BIAS, accel_bias.y);
             params->set_param_float(Params::PARAM_ACC_Z_BIAS, accel_bias.z);
-            Api::logMessage("IMU offsets captured", 0);
+            comm_link->logMessage("IMU offsets captured", 0);
 
             // reset the estimated state
             estimator->reset_state();
@@ -252,19 +254,19 @@ void Sensors::calibrate_accel(void)
             // check for bad _accel_scale
             if (sqrd_norm(accel_bias) > 4.5*4.5 && sqrd_norm(accel_bias) < 5.5*5.5)
             {
-                Api::logMessage("Detected bad IMU accel scale value", 4);
+                comm_link->logMessage("Detected bad IMU accel scale value", 4);
                 params->set_param_float(Params::PARAM_ACCEL_SCALE, 2.0f * params->get_param_float(Params::PARAM_ACCEL_SCALE));
                 accel_scale *= params->get_param_float(Params::PARAM_ACCEL_SCALE);
                 params->write_params();
             } else if (sqrd_norm(accel_bias) > 9.0f*9.0f && sqrd_norm(accel_bias) < 11.0*11.0)
             {
-                Api::logMessage("Detected bad IMU accel scale value", 4);
+                comm_link->logMessage("Detected bad IMU accel scale value", 4);
                 params->set_param_float(Params::PARAM_ACCEL_SCALE, 0.5f * params->get_param_float(Params::PARAM_ACCEL_SCALE));
                 accel_scale *= params->get_param_float(Params::PARAM_ACCEL_SCALE);
                 params->write_params();
             } else
             {
-                Api::logMessage("Too much movement for IMU cal", 2);
+                comm_link->logMessage("Too much movement for IMU cal", 2);
                 calibrating_acc_flag = false;
             }
         }
@@ -290,3 +292,6 @@ void Sensors::correct_imu(void)
     _gyro.y -= params->get_param_float(Params::PARAM_GYRO_Y_BIAS);
     _gyro.z -= params->get_param_float(Params::PARAM_GYRO_Z_BIAS);
 }
+
+
+} //namespace

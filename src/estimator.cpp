@@ -5,8 +5,9 @@
 #include "estimator.hpp"
 
 
+namespace rosflight {
 
-void Estimator::init_estimator(Params* _params, bool use_matrix_exponential, bool use_quadratic_integration, bool use_accelerometer)
+void Estimator::init(Params* _params, bool use_matrix_exponential, bool use_quadratic_integration, bool use_accelerometer)
 {
     params = _params;
 
@@ -219,3 +220,4 @@ void Estimator::run_estimator(const vector_t& accel, const vector_t& gyro, const
 }
 
 
+} //namespace

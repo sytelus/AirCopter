@@ -2,14 +2,18 @@
 #include <stdbool.h>
 #include <algorithm>
 #include "rc.hpp"
-#include "api.hpp"
 
-void RC::init(CommonState* _common_state, Board* _board, Mux* _mux, Params* _params)
+
+namespace rosflight {
+
+
+void RC::init(CommonState* _common_state, Board* _board, Mux* _mux, Params* _params, CommLink* _comm_link)
 {
   common_state = _common_state;
   mux = _mux;
   params = _params;
   board = _board;
+  comm_link = _comm_link;
 
   _calibrate_rc = false;
 
@@ -196,13 +200,13 @@ void RC::calibrate_rc()
 {
   if(common_state->isArmed())
   {
-    Api::logMessage("Cannot calibrate RC when FCU is armed", 5);
+    comm_link->logMessage("Cannot calibrate RC when FCU is armed", 5);
   }
   else
   {
     // Calibrate Extents of RC Transmitter
-    Api::logMessage("Calibrating RC, move sticks to full extents", 1);
-    Api::logMessage("in the next 10s", 1);
+    comm_link->logMessage("Calibrating RC, move sticks to full extents", 1);
+    comm_link->logMessage("in the next 10s", 1);
     uint64_t now = board->micros();
     static int32_t max[4] = {0, 0, 0, 0};
     static int32_t min[4] = {10000, 10000, 10000, 10000};
@@ -228,8 +232,8 @@ void RC::calibrate_rc()
     params->set_param_int(Params::PARAM_RC_F_RANGE, max[params->get_param_int(Params::PARAM_RC_F_CHANNEL)] - min[params->get_param_int(Params::PARAM_RC_F_CHANNEL)]);
 
     // Calibrate Trimmed Centers
-    Api::logMessage("Calibrating RC, leave sticks at center", 1);
-    Api::logMessage("and Mux::THROTTLE low for next 10 seconds", 1);
+    comm_link->logMessage("Calibrating RC, leave sticks at center", 1);
+    comm_link->logMessage("and Mux::THROTTLE low for next 10 seconds", 1);
     board->delayMillis(5000);
     now = board->micros();
     static int32_t sum[4] = {0, 0, 0, 0};
@@ -274,7 +278,10 @@ void RC::calibrate_rc()
 
   params->write_params();
 
-  Api::logMessage("Completed RC calibration", 0);
+  comm_link->logMessage("Completed RC calibration", 0);
   _calibrate_rc = false;
 }
 
+
+
+} //namespace

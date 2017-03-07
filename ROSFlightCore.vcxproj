@@ -19,11 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\api.hpp" />
+    <ClInclude Include="include\commlink.hpp" />
     <ClInclude Include="include\board.hpp" />
     <ClInclude Include="include\commonstate.hpp" />
     <ClInclude Include="include\controller.hpp" />
     <ClInclude Include="include\dummyboard.hpp" />
+    <ClInclude Include="include\dummycommlink.hpp" />
     <ClInclude Include="include\estimator.hpp" />
     <ClInclude Include="include\firmware.hpp" />
     <ClInclude Include="include\mixer.hpp" />

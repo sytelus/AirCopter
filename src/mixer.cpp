@@ -3,6 +3,7 @@
 #include "mode.hpp"
 #include "rc.hpp"
 
+namespace rosflight {
 
 void Mixer::init(CommonState* _common_state, Board* _board, Params* _params)
 {
@@ -152,3 +153,6 @@ void Mixer::mix_output()
         }
     }
 }
+
+
+} //namespace

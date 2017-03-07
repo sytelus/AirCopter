@@ -4,6 +4,9 @@
 #include "mode.hpp"
 
 
+namespace rosflight {
+
+
 void Mode::init(CommonState* _common_state, Sensors* _sensors, RC* _rc, Params* _params)
 {
     params = _params;
@@ -148,3 +151,6 @@ bool Mode::check_mode(uint64_t now)
     }
     return true;
 }
+
+
+} //namespace
