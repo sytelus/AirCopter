@@ -23,7 +23,7 @@ void Sensors::init(CommonState* _common_state, Board* _board, Estimator* _estima
     accel_scale = 9.80665f / acc1G * params->get_param_float(Params::PARAM_ACCEL_SCALE);
 }
 
-void Sensors::getImuMeasurements(vector_t& accel, vector_t& gyro, uint64_t& imu_time)
+void Sensors::get_imu_measurements(vector_t& accel, vector_t& gyro, uint64_t& imu_time)
 {
     accel = _accel;
     gyro = _gyro;

@@ -53,7 +53,7 @@ void Firmware::loop()
     if (sensors.update_sensors()) // 595 | 591 | 590 us
     {
         // If I have new IMU data, then perform control
-        sensors.getImuMeasurements(accel, gyro, imu_time);
+        sensors.get_imu_measurements(accel, gyro, imu_time);
         estimator.run_estimator(accel, gyro, imu_time); //  212 | 195 us (acc and gyro only, not exp propagation no quadratic integration)
         controller.run_controller(); // 278 | 271
         mixer.mix_output(); // 16 | 13 us

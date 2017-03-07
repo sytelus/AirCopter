@@ -41,6 +41,7 @@ public:
     virtual void readMag(int16_t mag_adc[3]) = 0;
     virtual void delayMicros(uint32_t us) = 0;
     virtual void delayMillis(uint32_t ms) = 0;
+    virtual void systemReset(bool toBootloader) = 0;
 };
 
 

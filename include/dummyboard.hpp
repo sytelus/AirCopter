@@ -30,6 +30,7 @@ public:
     virtual void readMag(int16_t mag_adc[3]) override {}
     virtual void delayMicros(uint32_t us) override {}
     virtual void delayMillis(uint32_t ms) override {}
+    virtual void systemReset(bool toBootloader) {}
 };
 
 

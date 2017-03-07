@@ -26,7 +26,7 @@ void Controller::init(CommonState* _common_state, Board* _board, Mux* _mux, Mixe
     board = _board;
     comm_link = _comm_link;
 
-    Mux::control_t& combined_control = mux->getCombinedControl();
+    Mux::control_t& combined_control = mux->combined_control();
     Mixer::command_t& mixer_command = mixer->getCommand();
 
     init_pid(&pid_roll,
@@ -183,7 +183,7 @@ void Controller::run_pid(pid_t *pid, float dt)
 
 void Controller::run_controller()
 {
-    Mux::control_t& combined_control = mux->getCombinedControl();
+    Mux::control_t& combined_control = mux->combined_control();
     Mixer::command_t& mixer_command = mixer->getCommand();
 
     if (prev_time < 0.0001f)

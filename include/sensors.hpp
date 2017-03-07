@@ -21,7 +21,7 @@ public:
     bool start_gyro_calibration(void);
     bool gyro_calibration_complete(void);
 
-    void getImuMeasurements(vector_t& accel, vector_t& gyro, uint64_t& imu_time);
+    void get_imu_measurements(vector_t& accel, vector_t& gyro, uint64_t& imu_time);
 
 private:
     volatile uint8_t accel_status, gyro_status, temp_status;

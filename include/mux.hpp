@@ -37,10 +37,12 @@ public:
 public:
     void init(CommonState* _common_state, Board* _board, Params* _params);
     bool mux_inputs();
-    control_t& getRCControl() { return _rc_control; }
-    control_t& getOffboardControl() { return _offboard_control; }
-    control_t& getCombinedControl() { return _combined_control; }
-    void setNewCommand(bool val) { _new_command = val; }
+
+    control_t& rc_control() { return _rc_control; }
+    control_t& offboard_control() { return _offboard_control; }
+    control_t& combined_control() { return _combined_control; }
+
+    void set_new_command(bool val) { _new_command = val; }
 
 private:
     CommonState* common_state;

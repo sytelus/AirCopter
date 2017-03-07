@@ -17,7 +17,7 @@ void RC::init(CommonState* _common_state, Board* _board, Mux* _mux, Params* _par
 
   _calibrate_rc = false;
 
-  Mux::control_t& rc_control = mux->getRCControl();
+  Mux::control_t& rc_control = mux->rc_control();
   rc_control.x.type = Mux::ANGLE;
   rc_control.y.type = Mux::ANGLE;
   rc_control.z.type = Mux::RATE;
@@ -28,7 +28,7 @@ void RC::init(CommonState* _common_state, Board* _board, Mux* _mux, Params* _par
   rc_control.z.value = 0;
   rc_control.F.value = 0;
 
-  Mux::control_t& offboard_control = mux->getOffboardControl();
+  Mux::control_t& offboard_control = mux->offboard_control();
   offboard_control.x.active = false;
   offboard_control.y.active = false;
   offboard_control.z.active = false;
@@ -62,7 +62,7 @@ bool RC::rc_switch(int16_t channel)
 
 void RC::convertPWMtoRad()
 {
-    Mux::control_t& rc_control = mux->getRCControl();
+    Mux::control_t& rc_control = mux->rc_control();
 
   // Get Roll control command out of RC
   if (rc_control.x.type == Mux::ANGLE)
@@ -133,7 +133,7 @@ bool RC::receive_rc(uint64_t now)
   last_rc_receive_time = now;
   // Get timestamp for deadband control lag
 
-  Mux::control_t& rc_control = mux->getRCControl();
+  Mux::control_t& rc_control = mux->rc_control();
 
   // Figure out the desired control type from the switches and params
   if (params->get_param_int(Params::PARAM_FIXED_WING))
@@ -191,7 +191,7 @@ bool RC::receive_rc(uint64_t now)
     rc_control.F.active = false;
   }
 
-  mux->setNewCommand(true);
+  mux->set_new_command(true);
   return true;
 }
 
