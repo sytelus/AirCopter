@@ -5,6 +5,10 @@
 extern "C" {
 #endif
 
+#if defined(_MSC_VER)
+        __pragma(warning( disable : 4100 4028 4189 4204 4244 4245 4239 4464 4456 4505 4514 4571 4624 4626 4267 4710 4820 5027 5031))					  
+#endif
+
 
 #include "turbovec.h"
 #include "turbotrig.h"

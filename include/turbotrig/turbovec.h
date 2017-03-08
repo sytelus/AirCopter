@@ -44,7 +44,7 @@ intvec_t int_vector_sub(intvec_t u, intvec_t v);
 int32_t int_sqrd_norm(intvec_t v);
 intvec_t int_vector_normalize(intvec_t v);
 intquat_t int_quaternion_normalize(intquat_t q);
-intquat_t int_quaternion_multiply(intquat_t q1, intquat_t q2);
+intquat_t int_quaternion_multiply(const intquat_t q1, const intquat_t q2);
 intquat_t int_quaternion_inverse(intquat_t q);
 intquat_t int_quaternion_from_two_vectors(intvec_t u, intvec_t v);
 

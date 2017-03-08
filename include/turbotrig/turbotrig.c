@@ -1,7 +1,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include <turbotrig/turbotrig.h>
+#include "turbotrig.h"
 
 int16_t atan_lookup_table[1001] =
 {
@@ -225,7 +225,7 @@ int32_t turbosin(int32_t x)
     return (1273 * x)/1000 - (405 * x * x)/(1000000);
   }
 
-  return x;
+  //return x;
 }
 
 
