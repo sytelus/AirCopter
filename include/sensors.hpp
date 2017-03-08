@@ -1,6 +1,6 @@
 #pragma once
 
-#include <turbotrig/turbovec.h>
+#include "turbotrig/turbovec.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include "estimator.hpp"
@@ -95,7 +95,7 @@ void Sensors::init(CommonState* _common_state, Board* _board, Estimator* _estima
     comm_link = _comm_link;
 
     uint16_t acc1G;
-    board->initSensors(acc1G, gyro_scale, params->get_param_int(Params::PARAM_BOARD_REVISION), std::bind(&Sensors::imu_ISR, this));
+    board->init_sensors(acc1G, gyro_scale, params->get_param_int(Params::PARAM_BOARD_REVISION), std::bind(&Sensors::imu_ISR, this));
     accel_scale = 9.80665f / acc1G * params->get_param_float(Params::PARAM_ACCEL_SCALE);
 }
 
@@ -112,7 +112,7 @@ bool Sensors::update_sensors()
     // These sensors need power to respond, so they might not have been
     // detected on startup, but will be detected whenever power is applied
     // to the 5V rail.
-    if (common_state->isDisarmed() && (!_sonar_present))//|| !_diff_pressure_present))
+    if (common_state->is_disarmed() && (!_sonar_present))//|| !_diff_pressure_present))
     {
         uint32_t now = board->millis();
         if (now > (last_time_look_for_disarmed_sensors + 500))
@@ -120,18 +120,18 @@ bool Sensors::update_sensors()
             last_time_look_for_disarmed_sensors = now;
             if (!_sonar_present)
             {
-                _sonar_present = board->isSensorPresent(board->SensorType::Sonar);
+                _sonar_present = board->is_sensor_present(board->SensorType::Sonar);
                 if (_sonar_present)
                 {
-                    comm_link->logMessage("FOUND SONAR", 0);
+                    comm_link->log_message("FOUND SONAR", 0);
                 }
             }
             if (!_diff_pressure_present)
             {
-                _diff_pressure_present = board->isSensorPresent(board->SensorType::DiffPressure);
+                _diff_pressure_present = board->is_sensor_present(board->SensorType::DiffPressure);
                 if (_diff_pressure_present)
                 {
-                    comm_link->logMessage("FOUND DIFF PRESS", 0);
+                    comm_link->log_message("FOUND DIFF PRESS", 0);
                 }
             }
         }
@@ -139,23 +139,23 @@ bool Sensors::update_sensors()
 
     if (_baro_present)
     {
-        board->readBaro(_baro_altitude, _baro_pressure, _baro_temperature);
+        board->read_baro(_baro_altitude, _baro_pressure, _baro_temperature);
     }
 
     if (_diff_pressure_present)
     {
-        board->readDiffPressure(_pitot_diff_pressure, _pitot_temp, _pitot_velocity);
+        board->read_diff_pressure(_pitot_diff_pressure, _pitot_temp, _pitot_velocity);
     }
 
     if (_sonar_present)
     {
-        _sonar_range = board->readSonar();
+        _sonar_range = board->read_sonar();
     }
 
     if (_mag_present)
     {
         int16_t raw_mag[3] = { 0,0,0 };
-        board->readMag(raw_mag);
+        board->read_mag(raw_mag);
         _mag.x = (float)raw_mag[0];
         _mag.y = (float)raw_mag[1];
         _mag.z = (float)raw_mag[2];
@@ -204,9 +204,9 @@ bool Sensors::update_imu(void)
     if (new_imu_data)
     {
         last_imu_update_ms = board->millis();
-        board->readAccel(accel_raw);
-        board->readGyro(gyro_raw);
-        board->readTemperature(temp_raw);
+        board->read_accel(accel_raw);
+        board->read_gyro(gyro_raw);
+        board->read_temperature(temp_raw);
         new_imu_data = false;
 
         // convert temperature SI units (degC, m/s^2, rad/s)
@@ -237,7 +237,7 @@ bool Sensors::update_imu(void)
             last_imu_update_ms = board->millis();
             params->set_param_int(Params::PARAM_BOARD_REVISION, (params->get_param_int(Params::PARAM_BOARD_REVISION) >= 4) ? 2 : 5);
             uint16_t acc1G;
-            board->initImu(acc1G, gyro_scale, params->get_param_int(Params::PARAM_BOARD_REVISION));
+            board->init_imu(acc1G, gyro_scale, params->get_param_int(Params::PARAM_BOARD_REVISION));
             accel_scale = 9.80665f / acc1G * params->get_param_float(Params::PARAM_ACCEL_SCALE);
         }
         return false;
@@ -265,7 +265,7 @@ void Sensors::calibrate_gyro()
             estimator->reset_adaptive_bias();
         } else
         {
-            comm_link->logMessage("Too much movement for gyro cal", 3);
+            comm_link->log_message("Too much movement for gyro cal", 3);
         }
 
         // reset calibration in case we do it again
@@ -310,7 +310,7 @@ void Sensors::calibrate_accel(void)
             params->set_param_float(Params::PARAM_ACC_X_BIAS, accel_bias.x);
             params->set_param_float(Params::PARAM_ACC_Y_BIAS, accel_bias.y);
             params->set_param_float(Params::PARAM_ACC_Z_BIAS, accel_bias.z);
-            comm_link->logMessage("IMU offsets captured", 0);
+            comm_link->log_message("IMU offsets captured", 0);
 
             // reset the estimated state
             estimator->reset_state();
@@ -320,19 +320,19 @@ void Sensors::calibrate_accel(void)
             // check for bad _accel_scale
             if (sqrd_norm(accel_bias) > 4.5*4.5 && sqrd_norm(accel_bias) < 5.5*5.5)
             {
-                comm_link->logMessage("Detected bad IMU accel scale value", 4);
+                comm_link->log_message("Detected bad IMU accel scale value", 4);
                 params->set_param_float(Params::PARAM_ACCEL_SCALE, 2.0f * params->get_param_float(Params::PARAM_ACCEL_SCALE));
                 accel_scale *= params->get_param_float(Params::PARAM_ACCEL_SCALE);
                 params->write_params();
             } else if (sqrd_norm(accel_bias) > 9.0f*9.0f && sqrd_norm(accel_bias) < 11.0*11.0)
             {
-                comm_link->logMessage("Detected bad IMU accel scale value", 4);
+                comm_link->log_message("Detected bad IMU accel scale value", 4);
                 params->set_param_float(Params::PARAM_ACCEL_SCALE, 0.5f * params->get_param_float(Params::PARAM_ACCEL_SCALE));
                 accel_scale *= params->get_param_float(Params::PARAM_ACCEL_SCALE);
                 params->write_params();
             } else
             {
-                comm_link->logMessage("Too much movement for IMU cal", 2);
+                comm_link->log_message("Too much movement for IMU cal", 2);
                 calibrating_acc_flag = false;
             }
         }

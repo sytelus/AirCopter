@@ -184,7 +184,7 @@ void Mixer::init_PWM()
 void Mixer::write_motor(uint8_t index, int32_t value)
 {
     value += 1000;
-    if (common_state->isArmed())
+    if (common_state->is_armed())
     {
         if (value > 2000)
         {

@@ -81,7 +81,7 @@ bool Mux::mux_inputs()
     }
     // otherwise combine the new commands
 
-    if(common_state->getArmedState() == CommonState::FAILSAFE_ARMED || common_state->getArmedState() == CommonState::FAILSAFE_DISARMED)
+    if(common_state->get_armed_state() == CommonState::FAILSAFE_ARMED || common_state->get_armed_state() == CommonState::FAILSAFE_DISARMED)
     {
         _combined_control = _failsafe_control;  
     }
@@ -173,11 +173,11 @@ bool Mux::mux_inputs()
         // Light to indicate override
         if (_rc_control.x.active || _rc_control.y.active || _rc_control.z.active || _rc_control.F.active)
         {
-            board->setLed(0, true);
+            board->set_led(0, true);
         }
         else
         {
-            board->setLed(0, false);
+            board->set_led(0, false);
         }
     }
 

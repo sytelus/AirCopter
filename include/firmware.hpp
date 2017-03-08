@@ -22,15 +22,15 @@ public:
     void loop();
 
     //getters
-    Board* getBoard() { return board; }
-    CommLink* getCommLink() { return comm_link; }
-    Estimator* getEstimator() { return &estimator; }
-    Sensors* getSensors() { return &sensors; }
-    Mux* getMux() { return &mux; }
-    Mixer* getMixer() { return &mixer; }
-    Controller* getController() { return &controller; }
-    RC* getRC() { return &rc; }
-    Mode* getMode() { return &mode; }
+    Board* get_board() { return board; }
+    CommLink* get_commLink() { return comm_link; }
+    Estimator* get_estimator() { return &estimator; }
+    Sensors* get_sensors() { return &sensors; }
+    Mux* get_mux() { return &mux; }
+    Mixer* get_mixer() { return &mixer; }
+    Controller* get_controller() { return &controller; }
+    RC* get_rc() { return &rc; }
+    Mode* get_mode() { return &mode; }
 
 private:
     //params and shared state

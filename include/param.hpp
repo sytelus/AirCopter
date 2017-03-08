@@ -315,7 +315,7 @@ void Params::init(Board* _board, CommLink* _comm_link)
     {
         init_param_int(static_cast<param_id_t>(i), "DEFAULT", 0);
     }
-    board->initParams();
+    board->init_params();
     if (!read_params())
     {
         set_param_defaults();
@@ -495,12 +495,12 @@ void Params::set_param_defaults(void)
 
 bool Params::read_params(void)
 {
-    return board->readParams();
+    return board->read_params();
 }
 
 bool Params::write_params(void)
 {
-    return board->writeParams(true);
+    return board->write_params(true);
 }
 
 void Params::param_change_callback(param_id_t id)
@@ -508,37 +508,37 @@ void Params::param_change_callback(param_id_t id)
     switch (id)
     {
     case PARAM_SYSTEM_ID:
-        comm_link->setSysID(get_param_int(PARAM_SYSTEM_ID));
+        comm_link->set_sys_id(get_param_int(PARAM_SYSTEM_ID));
         break;
     case PARAM_STREAM_HEARTBEAT_RATE:
-        comm_link->setStreamingRate(PARAM_STREAM_HEARTBEAT_RATE, get_param_int(PARAM_STREAM_HEARTBEAT_RATE));
+        comm_link->set_streaming_rate(PARAM_STREAM_HEARTBEAT_RATE, get_param_int(PARAM_STREAM_HEARTBEAT_RATE));
         break;
 
     case PARAM_STREAM_ATTITUDE_RATE:
-        comm_link->setStreamingRate(PARAM_STREAM_ATTITUDE_RATE, get_param_int(PARAM_STREAM_ATTITUDE_RATE));
+        comm_link->set_streaming_rate(PARAM_STREAM_ATTITUDE_RATE, get_param_int(PARAM_STREAM_ATTITUDE_RATE));
         break;
 
     case PARAM_STREAM_IMU_RATE:
-        comm_link->setStreamingRate(PARAM_STREAM_IMU_RATE, get_param_int(PARAM_STREAM_IMU_RATE));
+        comm_link->set_streaming_rate(PARAM_STREAM_IMU_RATE, get_param_int(PARAM_STREAM_IMU_RATE));
         break;
     case PARAM_STREAM_AIRSPEED_RATE:
-        comm_link->setStreamingRate(PARAM_STREAM_AIRSPEED_RATE, get_param_int(PARAM_STREAM_AIRSPEED_RATE));
+        comm_link->set_streaming_rate(PARAM_STREAM_AIRSPEED_RATE, get_param_int(PARAM_STREAM_AIRSPEED_RATE));
         break;
     case PARAM_STREAM_SONAR_RATE:
-        comm_link->setStreamingRate(PARAM_STREAM_SONAR_RATE, get_param_int(PARAM_STREAM_SONAR_RATE));
+        comm_link->set_streaming_rate(PARAM_STREAM_SONAR_RATE, get_param_int(PARAM_STREAM_SONAR_RATE));
         break;
     case  PARAM_STREAM_BARO_RATE:
-        comm_link->setStreamingRate(PARAM_STREAM_BARO_RATE, get_param_int(PARAM_STREAM_BARO_RATE));
+        comm_link->set_streaming_rate(PARAM_STREAM_BARO_RATE, get_param_int(PARAM_STREAM_BARO_RATE));
         break;
     case  PARAM_STREAM_MAG_RATE:
-        comm_link->setStreamingRate(PARAM_STREAM_MAG_RATE, get_param_int(PARAM_STREAM_MAG_RATE));
+        comm_link->set_streaming_rate(PARAM_STREAM_MAG_RATE, get_param_int(PARAM_STREAM_MAG_RATE));
         break;
 
     case PARAM_STREAM_SERVO_OUTPUT_RAW_RATE:
-        comm_link->setStreamingRate(PARAM_STREAM_SERVO_OUTPUT_RAW_RATE, get_param_int(PARAM_STREAM_SERVO_OUTPUT_RAW_RATE));
+        comm_link->set_streaming_rate(PARAM_STREAM_SERVO_OUTPUT_RAW_RATE, get_param_int(PARAM_STREAM_SERVO_OUTPUT_RAW_RATE));
         break;
     case PARAM_STREAM_RC_RAW_RATE:
-        comm_link->setStreamingRate(PARAM_STREAM_RC_RAW_RATE, get_param_int(PARAM_STREAM_RC_RAW_RATE));
+        comm_link->set_streaming_rate(PARAM_STREAM_RC_RAW_RATE, get_param_int(PARAM_STREAM_RC_RAW_RATE));
         break;
 
         //TODO: need better design so components can listen to their param changes
@@ -610,7 +610,7 @@ bool Params::set_param_int(param_id_t id, int32_t value)
     {
         _params.values[id] = value;
         param_change_callback(id);
-        comm_link->notifyParamChange(id, value);
+        comm_link->notify_param_change(id, value);
         return true;
     }
     return false;

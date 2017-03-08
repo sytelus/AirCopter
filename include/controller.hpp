@@ -81,8 +81,8 @@ void Controller::init(CommonState* _common_state, Board* _board, Mux* _mux, Mixe
         Params::PARAM_PID_ROLL_ANGLE_P,
         Params::PARAM_PID_ROLL_ANGLE_I,
         Params::PARAM_PID_ROLL_ANGLE_D,
-        &_estimator->getState().euler.x,
-        &_estimator->getState().omega.x,
+        &_estimator->state().euler.x,
+        &_estimator->state().omega.x,
         &combined_control.x.value,
         &mixer_command.x,
         params->get_param_int(Params::PARAM_MAX_COMMAND) / 2.0f,
@@ -92,8 +92,8 @@ void Controller::init(CommonState* _common_state, Board* _board, Mux* _mux, Mixe
         Params::PARAM_PID_PITCH_ANGLE_P,
         Params::PARAM_PID_PITCH_ANGLE_I,
         Params::PARAM_PID_PITCH_ANGLE_D,
-        &_estimator->getState().euler.y,
-        &_estimator->getState().omega.y,
+        &_estimator->state().euler.y,
+        &_estimator->state().omega.y,
         &combined_control.y.value,
         &mixer_command.y,
         params->get_param_int(Params::PARAM_MAX_COMMAND) / 2.0f,
@@ -103,7 +103,7 @@ void Controller::init(CommonState* _common_state, Board* _board, Mux* _mux, Mixe
         Params::PARAM_PID_ROLL_RATE_P,
         Params::PARAM_PID_ROLL_RATE_I,
         Params::PARAM_PID_ROLL_RATE_D,
-        &_estimator->getState().omega.x,
+        &_estimator->state().omega.x,
         NULL,
         &combined_control.x.value,
         &mixer_command.x,
@@ -114,7 +114,7 @@ void Controller::init(CommonState* _common_state, Board* _board, Mux* _mux, Mixe
         Params::PARAM_PID_PITCH_RATE_P,
         Params::PARAM_PID_PITCH_RATE_I,
         Params::PARAM_PID_PITCH_RATE_D,
-        &_estimator->getState().omega.y,
+        &_estimator->state().omega.y,
         NULL,
         &combined_control.y.value,
         &mixer_command.y,
@@ -125,7 +125,7 @@ void Controller::init(CommonState* _common_state, Board* _board, Mux* _mux, Mixe
         Params::PARAM_PID_YAW_RATE_P,
         Params::PARAM_PID_YAW_RATE_I,
         Params::PARAM_PID_YAW_RATE_D,
-        &_estimator->getState().omega.z,
+        &_estimator->state().omega.z,
         NULL,
         &combined_control.z.value,
         &mixer_command.z,
@@ -136,7 +136,7 @@ void Controller::init(CommonState* _common_state, Board* _board, Mux* _mux, Mixe
         Params::PARAM_PID_ALT_P,
         Params::PARAM_PID_ALT_I,
         Params::PARAM_PID_ALT_D,
-        &_estimator->getState().altitude,
+        &_estimator->state().altitude,
         NULL,
         &combined_control.F.value,
         &mixer_command.F,
@@ -165,7 +165,7 @@ void Controller::init_pid(pid_t* pid, Params::param_id_t kp_param_id, Params::pa
 
 void Controller::run_pid(pid_t *pid, float dt)
 {
-    if (dt > 0.010 || common_state->isDisarmed())
+    if (dt > 0.010 || common_state->is_disarmed())
     {
         // This means that this is a ''stale'' controller and needs to be reset.
         // This would happen if we have been operating in a different mode for a while
@@ -204,7 +204,7 @@ void Controller::run_pid(pid_t *pid, float dt)
 
     // If there is an integrator, we are armed, and throttle is high
     /// TODO: better way to figure out if throttle is high
-    if ((pid->ki_param_id < Params::PARAMS_COUNT) && (common_state->isArmed()) && (board->pwmRead(params->get_param_int(Params::PARAM_RC_F_CHANNEL) > 1200)))
+    if ((pid->ki_param_id < Params::PARAMS_COUNT) && (common_state->is_armed()) && (board->pwmRead(params->get_param_int(Params::PARAM_RC_F_CHANNEL) > 1200)))
     {
         if (params->get_param_float(pid->ki_param_id) > 0.0)
         {
@@ -236,11 +236,11 @@ void Controller::run_controller()
 
     if (prev_time < 0.0001f)
     {
-        prev_time = estimator->getState().now_us * 1e-6f;
+        prev_time = estimator->state().now_us * 1e-6f;
         return;
     }
 
-    float now = estimator->getState().now_us * 1e-6f;
+    float now = estimator->state().now_us * 1e-6f;
     float dt = now - prev_time;
     prev_time = now;
 
@@ -272,7 +272,7 @@ void Controller::run_controller()
     //  else // PASSTHROUGH
     mixer_command.F = combined_control.F.value;
 
-    comm_link->notifyControllerUpdated();
+    comm_link->notify_controller_updated();
 }
 
 

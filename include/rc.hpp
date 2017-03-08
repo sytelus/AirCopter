@@ -241,15 +241,15 @@ bool RC::receive_rc(uint64_t now)
 
 void RC::calibrate_rc()
 {
-    if(common_state->isArmed())
+    if(common_state->is_armed())
     {
-        comm_link->logMessage("Cannot calibrate RC when FCU is armed", 5);
+        comm_link->log_message("Cannot calibrate RC when FCU is armed", 5);
     }
     else
     {
         // Calibrate Extents of RC Transmitter
-        comm_link->logMessage("Calibrating RC, move sticks to full extents", 1);
-        comm_link->logMessage("in the next 10s", 1);
+        comm_link->log_message("Calibrating RC, move sticks to full extents", 1);
+        comm_link->log_message("in the next 10s", 1);
         uint64_t now = board->micros();
 
         while(board->micros() - now < 1e7)
@@ -266,7 +266,7 @@ void RC::calibrate_rc()
                     calib_min[i] = read_value;
                 }
             }
-            board->delayMillis(10);
+            board->delay_millis(10);
         }
         params->set_param_int(Params::PARAM_RC_X_RANGE, calib_max[params->get_param_int(Params::PARAM_RC_X_CHANNEL)] - calib_min[params->get_param_int(Params::PARAM_RC_X_CHANNEL)]);
         params->set_param_int(Params::PARAM_RC_Y_RANGE, calib_max[params->get_param_int(Params::PARAM_RC_Y_CHANNEL)] - calib_min[params->get_param_int(Params::PARAM_RC_Y_CHANNEL)]);
@@ -274,9 +274,9 @@ void RC::calibrate_rc()
         params->set_param_int(Params::PARAM_RC_F_RANGE, calib_max[params->get_param_int(Params::PARAM_RC_F_CHANNEL)] - calib_min[params->get_param_int(Params::PARAM_RC_F_CHANNEL)]);
 
         // Calibrate Trimmed Centers
-        comm_link->logMessage("Calibrating RC, leave sticks at center", 1);
-        comm_link->logMessage("and Mux::THROTTLE low for next 10 seconds", 1);
-        board->delayMillis(5000);
+        comm_link->log_message("Calibrating RC, leave sticks at center", 1);
+        comm_link->log_message("and Mux::THROTTLE low for next 10 seconds", 1);
+        board->delay_millis(5000);
         now = board->micros();
 
         while(board->micros() - now < 5e6)
@@ -287,7 +287,7 @@ void RC::calibrate_rc()
                 calib_sum[i] = calib_sum[i] + read_value;
                 calib_count[i] = calib_count[i] + 1;
             }
-            board->delayMillis(20); // RC is updated at 50 Hz
+            board->delay_millis(20); // RC is updated at 50 Hz
         }
 
         params->set_param_int(Params::PARAM_RC_X_CENTER, calib_sum[params->get_param_int(Params::PARAM_RC_X_CHANNEL)]/calib_count[params->get_param_int(Params::PARAM_RC_X_CHANNEL)]);
@@ -318,7 +318,7 @@ void RC::calibrate_rc()
 
     params->write_params();
 
-    comm_link->logMessage("Completed RC calibration", 0);
+    comm_link->log_message("Completed RC calibration", 0);
     _calibrate_rc = false;
 }
 

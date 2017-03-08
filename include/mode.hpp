@@ -48,12 +48,12 @@ void Mode::init(CommonState* _common_state, Sensors* _sensors, RC* _rc, Params* 
     sensors = _sensors;
     rc = _rc;
 
-    common_state->setToDisarm();
+    common_state->set_disarm();
 }
 
 bool Mode::arm(void)
 {
-    if (!started_gyro_calibration && common_state->isDisarmed())
+    if (!started_gyro_calibration && common_state->is_disarmed())
     {
         sensors->start_gyro_calibration();
         started_gyro_calibration = true;
@@ -61,8 +61,8 @@ bool Mode::arm(void)
     } else if (sensors->gyro_calibration_complete())
     {
         started_gyro_calibration = false;
-        common_state->setToArm();
-        board->setLed(0, true);
+        common_state->set_arm();
+        board->set_led(0, true);
         return true;
     }
     return false;
@@ -70,8 +70,8 @@ bool Mode::arm(void)
 
 void Mode::disarm(void)
 {
-    common_state->setToDisarm();
-    board->setLed(0, true);
+    common_state->set_disarm();
+    board->set_led(0, true);
 }
 
 /// TODO: Be able to tell if the RC has become disconnected during flight
@@ -81,7 +81,7 @@ bool Mode::check_failsafe(void)
     {
         if (board->pwmRead(i) < 900 || board->pwmRead(i) > 2100)
         {
-            if (common_state->isArmed() || common_state->isDisarmed())
+            if (common_state->is_armed() || common_state->is_disarmed())
             {
                 common_state->setArmedState(CommonState::FAILSAFE_DISARMED);
             }
@@ -89,7 +89,7 @@ bool Mode::check_failsafe(void)
             // blink LED
             if (blink_count > 25)
             {
-                board->toggleLed(1);
+                board->toggle_led(1);
                 blink_count = 0;
             }
             blink_count++;
@@ -98,11 +98,11 @@ bool Mode::check_failsafe(void)
     }
 
     // we got a valid RC measurement for all channels
-    if (common_state->getArmedState() == CommonState::FAILSAFE_ARMED || common_state->getArmedState() == CommonState::FAILSAFE_DISARMED)
+    if (common_state->get_armed_state() == CommonState::FAILSAFE_ARMED || common_state->get_armed_state() == CommonState::FAILSAFE_DISARMED)
     {
         // return to appropriate mode
         common_state->setArmedState(
-            (common_state->getArmedState() == CommonState::FAILSAFE_ARMED) ? CommonState::ARMED :CommonState::DISARMED
+            (common_state->get_armed_state() == CommonState::FAILSAFE_ARMED) ? CommonState::ARMED :CommonState::DISARMED
         );
     }
     return false;
@@ -130,7 +130,7 @@ bool Mode::check_mode(uint64_t now)
         // check for arming switch
         if (params->get_param_int(Params::PARAM_ARM_STICKS))
         {
-            if (common_state->getArmedState() == CommonState::DISARMED)
+            if (common_state->get_armed_state() == CommonState::DISARMED)
             {
                 // if left stick is down and to the right
                 if (board->pwmRead(params->get_param_int(Params::PARAM_RC_F_CHANNEL)) < params->get_param_int(Params::PARAM_RC_F_BOTTOM) + params->get_param_int(Params::PARAM_ARM_THRESHOLD)
@@ -170,7 +170,7 @@ bool Mode::check_mode(uint64_t now)
         {
             if (rc->rc_switch(params->get_param_int(Params::PARAM_ARM_CHANNEL)))
             {
-                if (common_state->getArmedState() == CommonState::DISARMED)
+                if (common_state->get_armed_state() == CommonState::DISARMED)
                     arm();
             } else
             {

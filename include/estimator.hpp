@@ -2,8 +2,8 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <turbotrig/turbotrig.h>
-#include <turbotrig/turbovec.h>
+#include "turbotrig/turbotrig.h"
+#include "turbotrig/turbovec.h"
 #include "param.hpp"
 
 
@@ -35,7 +35,7 @@ public:
     void reset_state();
     void reset_adaptive_bias();
     void run_estimator(const vector_t& accel, const vector_t& gyro, const uint64_t& imu_time);
-    state_t& getState() { return _current_state; };
+    state_t& state() { return _current_state; };
 
 private:
     void run_LPF(const vector_t& accel, const vector_t& gyro);
