@@ -39,16 +39,7 @@
   <ItemGroup>
     <ClCompile Include="include\turbotrig\turbotrig.c" />
     <ClCompile Include="include\turbotrig\turbovec.c" />
-    <ClCompile Include="src\controller.cpp" />
-    <ClCompile Include="src\estimator.cpp" />
-    <ClCompile Include="src\firmware.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\mixer.cpp" />
-    <ClCompile Include="src\mode.cpp" />
-    <ClCompile Include="src\mux.cpp" />
-    <ClCompile Include="src\param.cpp" />
-    <ClCompile Include="src\rc.cpp" />
-    <ClCompile Include="src\sensors.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{90AC21E5-626B-4F0A-B034-E3C72736F7A2}</ProjectGuid>
